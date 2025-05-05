@@ -1,0 +1,44 @@
+.custom-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  padding-bottom: 8rpx;
+}
+
+.gradient-bg {
+  background: linear-gradient(to bottom, #e0f4e8 100%, #e8f8f0 0%);
+}
+
+/* 添加不透明渐变版本 */
+.solid-gradient-bg {
+  background: linear-gradient(to bottom, #cceede 0%, #e0f4e8 100%);
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30rpx;
+  position: relative;
+  margin-bottom: 6rpx;
+}
+
+.nav-left, .nav-right {
+  width: 80rpx;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.nav-center {
+  flex: 1;
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: 500;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 

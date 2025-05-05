@@ -1,0 +1,68 @@
+<wxs module="utils">
+function getStatusText(status) {
+  var statusMap = {
+    pending: '待确认',
+    confirmed: '已确认',
+    canceled: '已取消',
+    completed: '已完成'
+  };
+  return statusMap[status] || '未知状态';
+}
+
+function getStatusColor(status) {
+  var colorMap = {
+    pending: '#FAAD14',
+    confirmed: '#52C41A',
+    canceled: '#FF4D4F',
+    completed: '#1890FF'
+  };
+  return colorMap[status] || '#888888';
+}
+
+module.exports = {
+  getStatusText: getStatusText,
+  getStatusColor: getStatusColor
+};
+</wxs>
+
+<view class="appointments-container">
+  <!-- 自定义导航栏 -->
+  <custom-navbar 
+    title="预约看房" 
+    showBack="{{true}}" 
+    solidGradient="{{true}}" 
+    bind:heightChange="onNavBarHeightChange"
+    backUrl="/pages/mine/index"
+    useTabBack="{{true}}"
+  ></custom-navbar>
+  
+  <block wx:if="{{appointments.length > 0}}">
+    <view class="appointments-list" style="padding-top: {{navBarHeight ? 5 : 5}}rpx;">
+      <block wx:for="{{appointments}}" wx:key="id">
+        <view class="appointment-item" bindtap="onHouseClick" data-id="{{item.house.id}}">
+          <view class="appointment-header">
+            <view class="appointment-id">预约编号：{{item.id}}</view>
+            <view class="appointment-status" style="color: {{utils.getStatusColor(item.status)}}">
+              {{utils.getStatusText(item.status)}}
+            </view>
+          </view>
+          <t-divider />
+          <view class="house-info">
+            <t-image src="{{item.house.images[0]}}" width="140" height="100" shape="round" mode="aspectFill" class="house-image" />
+            <view class="house-details">
+              <view class="house-title">{{item.house.title}}</view>
+              <view class="house-address">{{item.house.address}}</view>
+              <view class="appointment-time">
+                看房时间：{{item.date}} {{item.time}}
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </block>
+  <view class="empty-container" wx:else style="padding-top: {{navBarHeight ? 100 : 100}}rpx;">
+    <t-icon name="calendar" size="120rpx" color="#BBBBBB" />
+    <text>暂无预约记录</text>
+  </view>
+</view> 

@@ -1,0 +1,175 @@
+<view class="home-container">
+  <!-- 自定义导航栏 -->
+  <custom-navbar title="大马租房" solidGradient="{{true}}" showHome="{{true}}" bind:heightChange="onNavBarHeightChange"></custom-navbar>
+  
+  <!-- 搜索栏 -->
+  <view class="search-container" style="top: {{navBarHeight}}px;">
+    <t-search
+      value="{{searchValue}}"
+      placeholder="输入地点、小区名、户型查找房源"
+      bind:change="onSearch"
+      shape="round"
+      center
+    />
+  </view>
+  
+  <!-- 搜索栏占位 -->
+  <view class="search-placeholder"></view>
+
+  <!-- 轮播图 -->
+  <view class="swiper-container">
+    <swiper 
+      autoplay="true" 
+      circular="true"
+      interval="5000" 
+      duration="500"
+      indicator-dots="true"
+      indicator-color="rgba(255, 255, 255, 0.6)"
+      indicator-active-color="#0052D9"
+    >
+      <swiper-item wx:for="{{banners}}" wx:key="*this">
+        <image src="{{item}}" class="swiper-image" mode="aspectFill" />
+      </swiper-item>
+    </swiper>
+  </view>
+
+  <!-- 筛选选项 -->
+  <view class="filter-container">
+    <view class="filter-tabs">
+      <view 
+        class="filter-tab {{activeTab === 0 ? 'active' : ''}}" 
+        bindtap="onTabChange" 
+        data-value="0"
+      >
+        <text>{{filterData.area}}</text>
+        <t-icon name="caret-down-small" size="32rpx" />
+      </view>
+      <view 
+        class="filter-tab {{activeTab === 1 ? 'active' : ''}}" 
+        bindtap="onTabChange" 
+        data-value="1"
+      >
+        <text>{{filterData.sort}}</text>
+        <t-icon name="caret-down-small" size="32rpx" />
+      </view>
+      <view 
+        class="filter-tab {{activeTab === 2 ? 'active' : ''}}" 
+        bindtap="onTabChange" 
+        data-value="2"
+      >
+        <text>{{filterData.price}}</text>
+        <t-icon name="caret-down-small" size="32rpx" />
+      </view>
+      <view 
+        class="filter-tab {{activeTab === 3 ? 'active' : ''}}" 
+        bindtap="onTabChange" 
+        data-value="3"
+      >
+        <text>{{filterData.room}}</text>
+        <t-icon name="caret-down-small" size="32rpx" />
+      </view>
+    </view>
+    
+    <!-- 筛选面板 -->
+    <view class="filter-panel-overlay" wx:if="{{showFilter}}" bindtap="closeFilter">
+      <view class="filter-panel" style="top: {{navBarHeight + 98}}px;" catchtap="preventBubble">
+        <view class="filter-options">
+          <!-- 区域筛选选项 -->
+          <block wx:if="{{currentFilterType === 'area'}}">
+            <view 
+              wx:for="{{areaOptions}}" 
+              wx:key="*this" 
+              class="filter-option {{filterData.area === item ? 'active' : ''}}"
+              bindtap="onFilterItemClick"
+              data-type="area"
+              data-value="{{item}}"
+            >
+              {{item}}
+            </view>
+          </block>
+          
+          <!-- 排序筛选选项 -->
+          <block wx:if="{{currentFilterType === 'sort'}}">
+            <view 
+              wx:for="{{sortOptions}}" 
+              wx:key="*this" 
+              class="filter-option {{filterData.sort === item ? 'active' : ''}}"
+              bindtap="onFilterItemClick"
+              data-type="sort"
+              data-value="{{item}}"
+            >
+              {{item}}
+            </view>
+          </block>
+          
+          <!-- 价格筛选选项 -->
+          <block wx:if="{{currentFilterType === 'price'}}">
+            <view 
+              wx:for="{{priceOptions}}" 
+              wx:key="*this" 
+              class="filter-option {{filterData.price === item ? 'active' : ''}}"
+              bindtap="onFilterItemClick"
+              data-type="price"
+              data-value="{{item}}"
+            >
+              {{item}}
+            </view>
+          </block>
+          
+          <!-- 房型筛选选项 -->
+          <block wx:if="{{currentFilterType === 'room'}}">
+            <view 
+              wx:for="{{roomOptions}}" 
+              wx:key="*this" 
+              class="filter-option {{filterData.room === item ? 'active' : ''}}"
+              bindtap="onFilterItemClick"
+              data-type="room"
+              data-value="{{item}}"
+            >
+              {{item}}
+            </view>
+          </block>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 房源列表 -->
+  <view class="house-list">
+    <!-- 加载中提示 -->
+    <t-loading theme="circular" size="40rpx" loading="{{loading}}" class="loading-container" wx:if="{{loading}}" />
+    
+    <!-- 错误提示 -->
+    <view class="error-container" wx:if="{{error && !loading}}">
+      <t-icon name="error-circle" size="80rpx" />
+      <view class="error-text">{{error}}</view>
+      <t-button size="small" theme="primary" bindtap="fetchHouses">重新加载</t-button>
+    </view>
+    
+    <!-- 空数据提示 -->
+    <view class="empty-container" wx:if="{{!loading && !error && houses.length === 0}}">
+      <t-empty icon="info-circle-filled" description="暂无房源数据" />
+    </view>
+    
+    <block wx:for="{{houses}}" wx:key="id">
+      <view class="house-item" bindtap="onHouseClick" data-id="{{item.id}}">
+        <view class="house-item-content">
+          <view class="house-img-container">
+            <image src="{{item.images[0]}}" class="house-img" mode="aspectFill" />
+          </view>
+          <view class="house-info">
+            <view class="house-title">{{item.title}}</view>
+            <view class="house-price">{{item.price}} {{item.priceUnit}}</view>
+            <view class="house-info-line">
+              <text>{{item.area || '未知区域'}} | {{item.paymentMethod || '月付'}} | {{item.roomType}}</text>
+            </view>
+            <view class="house-address">{{item.address}}</view>
+            <view class="house-tags">
+              <t-tag wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag" size="small" wx:for-index="tagIndex" wx:if="{{tagIndex < 3}}" variant="light" class="tag">{{tag}}</t-tag>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view> 

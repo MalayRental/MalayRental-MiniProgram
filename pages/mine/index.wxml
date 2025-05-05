@@ -1,0 +1,51 @@
+<!--pages/mine/index.wxml-->
+<view class="mine-container">
+  <!-- 自定义导航栏 -->
+  <custom-navbar title="我的" solidGradient="{{true}}" showHome="{{true}}" bind:heightChange="onNavBarHeightChange"></custom-navbar>
+
+  <!-- 用户信息 -->
+  <view class="user-info-section" style="margin-top: {{navBarHeight ? 5 : 5}}rpx;" bindtap="handleUserInfoClick">
+    <!-- 根据useDefaultAvatar标志决定显示图标还是图片 -->
+    <t-avatar wx:if="{{!useDefaultAvatar}}" image="{{userInfo.avatar}}" size="large" />
+    <t-avatar wx:else icon="user" size="large" />
+    <view class="user-details">
+      <view class="user-name">{{userInfo.name}}</view>
+      <view class="user-phone">{{userInfo.phone}}</view>
+    </view>
+  </view>
+  
+  <!-- 功能入口 -->
+  <view class="function-section">
+    <!-- 功能卡片组 -->
+    <view class="card-container">
+      <view class="function-cards">
+        <view class="function-card" bindtap="navigateTo" data-url="/pages/mine/favorites">
+          <t-icon name="heart" size="48rpx" color="#0052D9" />
+          <text>我的收藏</text>
+        </view>
+        <view class="function-card" bindtap="navigateTo" data-url="/pages/mine/history">
+          <t-icon name="time" size="48rpx" color="#0052D9" />
+          <text>浏览历史</text>
+        </view>
+        <view class="function-card" bindtap="navigateTo" data-url="/pages/mine/appointments">
+          <t-icon name="calendar" size="48rpx" color="#0052D9" />
+          <text>预约看房</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 设置选项卡片 -->
+    <view class="card-container settings-card">
+      <view class="settings-group">
+        <t-cell title="我的账号与名片" arrow hover bindtap="navigateTo" data-url="/pages/mine/edit-profile/index" leftIcon="user" t-class-title="cell-title" />
+        <t-cell title="关于大马租房" arrow hover bindtap="showToast" data-message="大马租房 v1.0.0" leftIcon="help-circle" t-class-title="cell-title" />
+        <t-cell title="与我们合作" arrow hover bindtap="showToast" data-message="请联系客服" leftIcon="share" t-class-title="cell-title" />
+      </view>
+    </view>
+  </view>
+  
+  <!-- 退出登录 -->
+  <view class="logout-section" wx:if="{{isLoggedIn}}">
+    <t-button theme="danger" block bind:tap="logout" class="logout-button">退出登录</t-button>
+  </view>
+</view>

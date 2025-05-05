@@ -1,0 +1,95 @@
+<!--pages/mine/edit-profile/index.wxml-->
+<view class="profile-container">
+  <!-- 自定义导航栏 -->
+  <custom-navbar title="我的账号与名片" showBack="{{true}}" bind:heightChange="onNavBarHeightChange"></custom-navbar>
+  
+  <!-- 用户信息编辑区 -->
+  <view class="profile-content" style="margin-top: {{navBarHeight}}px;">
+    <!-- 头像卡片 -->
+    <view class="profile-card" style="position: relative; left: 12rpx; top: -113rpx; width: 692rpx; display: block; box-sizing: border-box">
+      <view class="card-title">
+        <t-icon name="user" size="40rpx" color="#0052D9" />
+        <text>个人形象</text>
+      </view>
+      
+      <!-- 头像选择 - 使用普通图片 -->
+      <view class="avatar-section">
+        <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+          <image wx:if="{{userInfo.avatar && userInfo.avatar !== 'default'}}" src="{{userInfo.avatar}}" class="user-avatar" mode="aspectFill"></image>
+        </button>
+        <view class="avatar-hint">点击更换头像</view>
+      </view>
+    </view>
+    
+    <!-- 基本信息表单卡片 -->
+    <view class="profile-card" style="position: relative; left: 12rpx; top: -96rpx; width: 692rpx; display: block; box-sizing: border-box">
+      <view class="card-title">
+        <t-icon name="info-circle" size="40rpx" color="#0052D9" />
+        <text>基本信息</text>
+      </view>
+      
+      <view class="form-section">
+        <t-cell title="昵称" bordered="{{false}}" hover left-icon="user" class="form-item" t-class-title="cell-title" t-class-note="cell-note">
+          <!-- 使用t-input替代普通input，保持样式一致 -->
+          <t-input
+            slot="note"
+            value="{{userInfo.username}}"
+            placeholder="请输入昵称"
+            align="right"
+            placeholder-style="color: #bbb"
+            data-field="username"
+            bind:change="onNicknameChange"
+            type="nickname"
+            borderless
+          />
+        </t-cell>
+        
+        <t-divider />
+        
+        <t-cell title="手机号" bordered="{{false}}" hover left-icon="call" class="form-item" t-class-title="cell-title" t-class-note="cell-note">
+          <t-input
+            slot="note"
+            value="{{userInfo.phone_number}}"
+            placeholder="请输入手机号"
+            placeholderStyle="color: #bbb"
+            type="number"
+            maxlength="{{11}}"
+            data-field="phone_number"
+            bind:change="onInputChange"
+            align="right"
+            borderless
+          />
+        </t-cell>
+        
+        <t-divider />
+        
+        <t-cell title="邮箱" bordered="{{false}}" hover left-icon="mail" class="form-item" t-class-title="cell-title" t-class-note="cell-note">
+          <t-input
+            slot="note"
+            value="{{userInfo.email}}"
+            placeholder="请输入邮箱"
+            placeholderStyle="color: #bbb"
+            data-field="email"
+            bind:change="onInputChange"
+            align="right"
+            borderless
+          />
+        </t-cell>
+      </view>
+    </view>
+    
+    <!-- 保存提示 -->
+    <view class="tips-section" style="position: relative; left: 11rpx; top: -79rpx; width: 692rpx; display: flex; box-sizing: border-box">
+      <t-icon name="info-circle-filled" size="32rpx" color="#999" />
+      <text>完善个人信息有助于我们为您提供更好的服务</text>
+    </view>
+    
+    <!-- 底部保存按钮 -->
+    <view class="btn-section" style="position: relative; left: 0rpx; top: -101rpx">
+      <t-button theme="primary" block shape="round" size="large" bindtap="saveUserInfo" loading="{{isSaving}}">保存</t-button>
+    </view>
+  </view>
+  
+  <!-- 消息提示 -->
+  <t-toast id="t-toast" />
+</view> 

@@ -1,0 +1,86 @@
+.appointments-container {
+  min-height: 100vh;
+  padding-bottom: 180rpx;
+  background: linear-gradient(to bottom, #e0f4e8 0%, #ffffff 100%);
+  padding: 0 20rpx;
+}
+
+.appointments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+  padding-top: 20rpx;
+}
+
+.appointment-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.appointment-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.appointment-id {
+  font-size: 26rpx;
+  color: #888;
+}
+
+.appointment-status {
+  font-size: 26rpx;
+  font-weight: bold;
+}
+
+.house-info {
+  display: flex;
+  margin-top: 20rpx;
+}
+
+.house-image {
+  margin-right: 20rpx;
+}
+
+.house-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.house-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.house-address {
+  font-size: 26rpx;
+  color: #888;
+  margin-bottom: 20rpx;
+}
+
+.appointment-time {
+  font-size: 26rpx;
+  color: #0052D9;
+  margin-top: 10rpx;
+}
+
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 200rpx;
+  color: #888;
+  font-size: 30rpx;
+}
+
+.empty-container text {
+  margin-top: 30rpx;
+} 
