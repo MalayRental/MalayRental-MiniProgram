@@ -9,23 +9,25 @@ Page({
     loading: false,
     error: '',
     currentUserId: '', // 添加当前用户ID
-    refreshTimer: null // 定时刷新的定时器
+    refreshTimer: null, // 定时刷新的定时器
+    isLoggedIn: false // 添加登录状态标识
   },
   
   onLoad() {
-    // 设置当前用户ID
-    this.setData({
-      currentUserId: getCurrentUserId()
-    });
+    // 检查登录状态
+    this.checkLoginStatus();
     
-    this.fetchConversations();
-    
-    // 设置定时器，每1.5秒刷新一次会话列表
-    const refreshTimer = setInterval(() => {
-      this.fetchConversations(true); // 传入true表示静默刷新
-    }, 1500);
-    
-    this.setData({ refreshTimer });
+    // 只有在登录状态才获取会话和设置定时器
+    if (this.data.isLoggedIn) {
+      this.fetchConversations();
+      
+      // 设置定时器，每1.5秒刷新一次会话列表
+      const refreshTimer = setInterval(() => {
+        this.fetchConversations(true); // 传入true表示静默刷新
+      }, 1500);
+      
+      this.setData({ refreshTimer });
+    }
   },
   
   onShow() {
@@ -34,16 +36,23 @@ Page({
         selected: 1
       });
     }
-    // 重新加载会话列表，确保数据最新
-    this.fetchConversations();
     
-    // 如果定时器不存在，重新创建
-    if (!this.data.refreshTimer) {
-      const refreshTimer = setInterval(() => {
-        this.fetchConversations(true); // 传入true表示静默刷新
-      }, 1500);
+    // 重新检查登录状态
+    this.checkLoginStatus();
+    
+    // 只有在登录状态才获取会话和重新设置定时器
+    if (this.data.isLoggedIn) {
+      // 重新加载会话列表，确保数据最新
+      this.fetchConversations();
       
-      this.setData({ refreshTimer });
+      // 如果定时器不存在，重新创建
+      if (!this.data.refreshTimer) {
+        const refreshTimer = setInterval(() => {
+          this.fetchConversations(true); // 传入true表示静默刷新
+        }, 1500);
+        
+        this.setData({ refreshTimer });
+      }
     }
   },
   
@@ -60,6 +69,40 @@ Page({
     if (this.data.refreshTimer) {
       clearInterval(this.data.refreshTimer);
     }
+  },
+
+  // 检查登录状态
+  checkLoginStatus() {
+    const isLoggedIn = wx.getStorageSync('isLoggedIn') || false;
+    const userInfo = wx.getStorageSync('userInfo') || null;
+    
+    if (isLoggedIn && userInfo) {
+      // 设置当前用户ID
+      this.setData({
+        isLoggedIn: true,
+        currentUserId: getCurrentUserId()
+      });
+    } else {
+      // 未登录，清除消息列表和定时器
+      this.setData({
+        isLoggedIn: false,
+        messageList: [],
+        currentUserId: ''
+      });
+      
+      // 清除定时器
+      if (this.data.refreshTimer) {
+        clearInterval(this.data.refreshTimer);
+        this.setData({ refreshTimer: null });
+      }
+    }
+  },
+  
+  // 跳转到登录页面
+  goToLogin() {
+    wx.navigateTo({
+      url: '/pages/login/index?from=message'
+    });
   },
 
   // 拉取会话列表
