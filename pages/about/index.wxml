@@ -1,0 +1,70 @@
+<view class="about-container">
+  <!-- 自定义导航栏 -->
+  <custom-navbar title="关于大马租房" showBack="{{true}}" solidGradient="{{true}}" bind:heightChange="onNavBarHeightChange"></custom-navbar>
+  
+  <!-- LOGO和标题 -->
+  <view class="logo-section">
+    <image src="/images/logo.png" mode="aspectFit" class="logo-image"></image>
+    <view class="app-title">大马租房</view>
+    <view class="app-slogan">马来西亚华人专属租房平台</view>
+    <view class="app-version">{{appInfo.version}}</view>
+  </view>
+  
+  <!-- 应用信息 -->
+  <view class="info-card">
+    <view class="card-title">应用信息</view>
+    <view class="info-item">
+      <text class="info-label">发布日期：</text>
+      <text class="info-value">{{appInfo.releaseDate}}</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">开发团队：</text>
+      <text class="info-value">{{appInfo.developer}}</text>
+    </view>
+    <view class="info-item" bindtap="copyContact">
+      <text class="info-label">联系邮箱：</text>
+      <text class="info-value contact-value">{{appInfo.contact}}</text>
+      <t-icon name="copy" size="32rpx" color="#0052D9" />
+    </view>
+    <view class="info-item">
+      <text class="info-label">官方网站：</text>
+      <text class="info-value">{{appInfo.website}}</text>
+    </view>
+  </view>
+  
+  <!-- 平台介绍 -->
+  <view class="intro-card">
+    <view class="card-title">平台介绍</view>
+    <view class="intro-text">
+      大马租房是专为马来西亚华人留学生、工作人士以及当地居民打造的房屋租赁平台。我们致力于为用户提供真实、安全、便捷的租房体验，解决海外生活的住房需求。
+    </view>
+    <view class="intro-text">
+      我们的平台特色：
+      <view class="feature-item">· 真实可靠的房源信息</view>
+      <view class="feature-item">· 专业的客服团队</view>
+      <view class="feature-item">· 完善的租房保障</view>
+      <view class="feature-item">· 便捷的在线预约看房</view>
+    </view>
+  </view>
+  
+  <!-- 常见问题 -->
+  <view class="faq-card">
+    <view class="card-title">常见问题</view>
+    <view class="faq-list">
+      <view class="faq-item" wx:for="{{faqList}}" wx:key="question">
+        <view class="faq-question">
+          <t-icon name="help-circle" size="36rpx" color="#0052D9" />
+          <text>{{item.question}}</text>
+        </view>
+        <view class="faq-answer">{{item.answer}}</view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 合作入口 -->
+  <view class="cooperation-card" bindtap="goToCooperation">
+    <view class="cooperation-title">与我们合作</view>
+    <view class="cooperation-desc">成为房东或合作伙伴，共同发展</view>
+    <t-icon name="chevron-right" size="40rpx" color="#0052D9" />
+  </view>
+</view> 

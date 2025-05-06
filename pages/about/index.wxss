@@ -1,0 +1,163 @@
+/* pages/about/index.wxss */
+.about-container {
+  min-height: 100vh;
+  padding-bottom: 80rpx;
+  background: linear-gradient(to bottom, #e0f4e8 0%, #ffffff 100%);
+}
+
+/* LOGO和标题部分 */
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 0;
+}
+
+.logo-image {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+}
+
+.app-title {
+  margin-top: 20rpx;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.app-slogan {
+  margin-top: 10rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.app-version {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 卡片通用样式 */
+.info-card, .intro-card, .faq-card, .cooperation-card {
+  margin: 30rpx 30rpx;
+  padding: 30rpx;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding-bottom: 15rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+/* 应用信息卡片 */
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.info-label {
+  font-size: 28rpx;
+  color: #666;
+  min-width: 160rpx;
+}
+
+.info-value {
+  font-size: 28rpx;
+  color: #333;
+  flex: 1;
+}
+
+.contact-value {
+  color: #0052D9;
+  margin-right: 10rpx;
+}
+
+/* 介绍卡片 */
+.intro-text {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 20rpx;
+}
+
+.feature-item {
+  font-size: 28rpx;
+  color: #333;
+  margin-top: 10rpx;
+  margin-left: 15rpx;
+}
+
+/* FAQ卡片 */
+.faq-list {
+  margin-top: 10rpx;
+}
+
+.faq-item {
+  margin-bottom: 30rpx;
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.faq-question text {
+  margin-left: 10rpx;
+}
+
+.faq-answer {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+  margin-left: 46rpx;
+}
+
+/* 合作卡片 */
+.cooperation-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(0, 82, 217, 0.05);
+}
+
+.cooperation-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #0052D9;
+}
+
+.cooperation-desc {
+  font-size: 26rpx;
+  color: #666;
+  margin-top: 5rpx;
+  flex: 1;
+  margin-left: 20rpx;
+}
+
+/* 淡入动画 */
+.about-container {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+} 

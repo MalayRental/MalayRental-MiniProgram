@@ -11,7 +11,8 @@
     "pages/mine/edit-profile/index",
     "pages/login/index",
     "pages/login/register",
-    "pages/logs/logs"
+    "pages/logs/logs",
+    "pages/about/index",
   ],
   "window": {
     "navigationBarTextStyle": "black",
