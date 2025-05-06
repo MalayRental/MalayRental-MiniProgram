@@ -39,6 +39,7 @@
       <view class="settings-group">
         <t-cell title="我的账号与名片" arrow hover bindtap="navigateTo" data-url="/pages/mine/edit-profile/index" leftIcon="user" t-class-title="cell-title" />
         <t-cell title="关于大马租房" arrow hover bindtap="navigateTo" data-url="/pages/about/index" leftIcon="help-circle" t-class-title="cell-title" />
+        <t-cell title="与我们合作" arrow hover bindtap="navigateTo" data-url="/pages/cooperation/index" leftIcon="share" t-class-title="cell-title" />
       </view>
     </view>
   </view>

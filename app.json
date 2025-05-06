@@ -13,6 +13,7 @@
     "pages/login/register",
     "pages/logs/logs",
     "pages/about/index",
+    "pages/cooperation/index"
   ],
   "window": {
     "navigationBarTextStyle": "black",

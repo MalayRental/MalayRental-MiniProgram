@@ -1,0 +1,215 @@
+<view class="cooperation-container">
+  <!-- 自定义导航栏 -->
+  <custom-navbar title="与我们合作" showBack="{{true}}" solidGradient="{{true}}" bind:heightChange="onNavBarHeightChange"></custom-navbar>
+  
+  <!-- 页面头部 -->
+  <view class="header-section">
+    <image src="/images/cooperation-banner.png" class="header-image" mode="aspectFill"></image>
+    <view class="header-overlay">
+      <view class="header-text">共同打造马来西亚华人租房生态</view>
+    </view>
+  </view>
+  
+  <!-- 合作选项卡 -->
+  <view class="tab-container">
+    <t-tabs value="{{activeTab}}" bind:change="onTabChange" t-class="custom-tabs" t-class-active="custom-active-tab">
+      <t-tab-panel wx:for="{{tabList}}" wx:key="value" label="{{item.label}}" value="{{item.value}}">
+        
+        <!-- 房东合作内容 -->
+        <block wx:if="{{activeTab === 0}}">
+          <view class="tab-content">
+            <!-- 标题 -->
+            <view class="content-title">{{cooperationInfo.landlord.title}}</view>
+            
+            <!-- 权益介绍 -->
+            <view class="benefit-section">
+              <view class="section-title">房东权益</view>
+              <view class="benefit-list">
+                <view class="benefit-item" wx:for="{{cooperationInfo.landlord.benefits}}" wx:key="*this">
+                  <view class="benefit-icon">
+                    <t-icon name="check-circle-filled" size="44rpx" color="#0052D9" />
+                  </view>
+                  <view class="benefit-text">{{item}}</view>
+                </view>
+              </view>
+            </view>
+            
+            <!-- 合作流程 -->
+            <view class="process-section">
+              <view class="section-title">合作流程</view>
+              <view class="process-list">
+                <view class="process-item" wx:for="{{cooperationInfo.landlord.process}}" wx:key="*this" wx:for-index="idx">
+                  <view class="process-number">{{idx + 1}}</view>
+                  <view class="process-text">{{item}}</view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </block>
+        
+        <!-- 商家合作内容 -->
+        <block wx:if="{{activeTab === 1}}">
+          <view class="tab-content">
+            <!-- 标题 -->
+            <view class="content-title">{{cooperationInfo.business.title}}</view>
+            
+            <!-- 权益介绍 -->
+            <view class="benefit-section">
+              <view class="section-title">商家权益</view>
+              <view class="benefit-list">
+                <view class="benefit-item" wx:for="{{cooperationInfo.business.benefits}}" wx:key="*this">
+                  <view class="benefit-icon">
+                    <t-icon name="check-circle-filled" size="44rpx" color="#0052D9" />
+                  </view>
+                  <view class="benefit-text">{{item}}</view>
+                </view>
+              </view>
+            </view>
+            
+            <!-- 合作流程 -->
+            <view class="process-section">
+              <view class="section-title">合作流程</view>
+              <view class="process-list">
+                <view class="process-item" wx:for="{{cooperationInfo.business.process}}" wx:key="*this" wx:for-index="idx">
+                  <view class="process-number">{{idx + 1}}</view>
+                  <view class="process-text">{{item}}</view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </block>
+      </t-tab-panel>
+    </t-tabs>
+  </view>
+  
+  <!-- 联系方式 -->
+  <view class="contact-card">
+    <view class="card-title">联系我们</view>
+    <view class="contact-list">
+      <view class="contact-item">
+        <t-icon name="mail" size="44rpx" color="#0052D9" />
+        <text class="contact-text">business@malayrental.com</text>
+      </view>
+      <view class="contact-item" bindtap="copyWechat">
+        <t-icon name="logo-wechat" size="44rpx" color="#0052D9" />
+        <text class="contact-text">malayrental <text class="copy-hint">(点击复制)</text></text>
+      </view>
+      <view class="contact-item">
+        <t-icon name="call" size="44rpx" color="#0052D9" />
+        <text class="contact-text">+60 12-345 6789</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 合作申请表单 -->
+  <view class="form-card">
+    <view class="card-title">提交合作申请</view>
+    <view class="form-content">
+      <!-- 姓名 -->
+      <t-input 
+        label="您的姓名" 
+        placeholder="请输入您的姓名" 
+        value="{{formData.name}}"
+        data-field="name"
+        bind:change="onInputChange"
+        required
+      />
+      
+      <!-- 手机号 -->
+      <t-input 
+        label="联系电话" 
+        placeholder="请输入您的手机号码" 
+        value="{{formData.phone}}"
+        data-field="phone"
+        bind:change="onInputChange"
+        type="number"
+        required
+      />
+      
+      <!-- 微信号 -->
+      <t-input 
+        label="微信号" 
+        placeholder="请输入您的微信号" 
+        value="{{formData.wechat}}"
+        data-field="wechat"
+        bind:change="onInputChange"
+      />
+      
+      <!-- 邮箱 -->
+      <t-input 
+        label="电子邮箱" 
+        placeholder="请输入您的电子邮箱" 
+        value="{{formData.email}}"
+        data-field="email"
+        bind:change="onInputChange"
+        type="text"
+      />
+      
+      <!-- 房源信息/商家信息 -->
+      <block wx:if="{{activeTab === 0}}">
+        <t-textarea 
+          label="房源信息" 
+          placeholder="请简要描述您的房源情况（位置、户型、数量等）" 
+          value="{{formData.houseInfo}}"
+          data-field="houseInfo"
+          bind:change="onInputChange"
+          disableDefaultPadding="{{true}}"
+          maxlength="300"
+          indicator
+        />
+      </block>
+      <block wx:else>
+        <t-textarea 
+          label="商家信息" 
+          placeholder="请简要描述您的企业/商家情况及合作意向" 
+          value="{{formData.businessInfo}}"
+          data-field="businessInfo"
+          bind:change="onInputChange"
+          disableDefaultPadding="{{true}}"
+          maxlength="300"
+          indicator
+        />
+      </block>
+      
+      <!-- 留言 -->
+      <t-textarea 
+        label="留言" 
+        placeholder="其他需要说明的事项" 
+        value="{{formData.message}}"
+        data-field="message"
+        bind:change="onInputChange"
+        disableDefaultPadding="{{true}}"
+        maxlength="200"
+        indicator
+      />
+      
+      <!-- 上传图片 -->
+      <view class="upload-section">
+        <view class="upload-title">
+          相关图片 <text class="upload-hint">(选填，最多5张)</text>
+        </view>
+        <view class="upload-content">
+          <!-- 已上传图片 -->
+          <view class="upload-item" wx:for="{{uploadFiles}}" wx:key="url">
+            <image src="{{item.url}}" class="upload-image" mode="aspectFill"></image>
+            <view class="delete-icon" bindtap="deleteImage" data-index="{{index}}">
+              <t-icon name="close-circle" size="40rpx" color="#FF4D4F" />
+            </view>
+          </view>
+          
+          <!-- 上传按钮 -->
+          <view class="upload-add" bindtap="chooseImage" wx:if="{{uploadFiles.length < 5}}">
+            <t-icon name="add" size="60rpx" color="#0052D9" />
+          </view>
+        </view>
+      </view>
+      
+      <!-- 提交按钮 -->
+      <view class="submit-section">
+        <t-button theme="primary" size="large" block bind:tap="submitForm" loading="{{uploading}}">
+          提交申请
+        </t-button>
+      </view>
+    </view>
+  </view>
+</view> 
