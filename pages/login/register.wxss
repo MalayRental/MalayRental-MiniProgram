@@ -19,8 +19,25 @@
 .header-section {
   display: flex;
   flex-direction: column;
+  align-items: center;
   margin-bottom: 30rpx;
   padding: 20rpx 0;
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.logo {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  margin-bottom: 10rpx;
 }
 
 .welcome-text {

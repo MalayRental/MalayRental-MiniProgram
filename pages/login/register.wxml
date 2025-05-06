@@ -5,6 +5,9 @@
 
   <view class="register-content" style="margin-top: {{navBarHeight ? navBarHeight + 20 : 20}}rpx;">
     <view class="header-section">
+      <view class="logo-container">
+        <image src="/images/logo.png" class="logo" mode="aspectFit"></image>
+      </view>
       <view class="welcome-text">新用户注册</view>
       <view class="sub-title">创建您的大马租房账号</view>
     </view>

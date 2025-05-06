@@ -6,8 +6,8 @@
   <view class="login-content" style="margin-top: {{navBarHeight ? navBarHeight + 20 : 20}}rpx;">
     <view class="header-section">
       <view class="logo-container">
-        <!-- 使用图标替代图片，避免网络请求 -->
-        <t-icon name="user-avatar" size="80rpx" class="logo" />
+        <!-- 使用logo图片 -->
+        <image src="/images/logo.png" class="logo" mode="aspectFit"></image>
         <text class="app-name">大马租房</text>
       </view>
       <text class="welcome-text">欢迎登录</text>
