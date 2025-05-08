@@ -1,6 +1,5 @@
 // pages/login/index.js
 const { request, api } = require('../../utils/request');
-const { ensureFullAvatarUrl } = require('../../utils/dataAdapter');
 
 Page({
   data: {

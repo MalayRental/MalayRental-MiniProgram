@@ -1,5 +1,5 @@
 // 封装请求方法
-const BASE_URL = 'http://192.168.1.11:5000/api'; // 根据实际后端地址修改
+const BASE_URL = 'https://web.lostzone.cn:7957/api'; // 根据实际后端地址修改
 
 // 获取当前登录用户的ID
 const getCurrentUserId = () => {

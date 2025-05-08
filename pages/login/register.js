@@ -12,9 +12,7 @@ Page({
     navBarHeight: 0
   },
 
-  onLoad(options) {
-    // 如果有需要处理的选项参数
-  },
+
 
   // 处理导航栏高度变化
   onNavBarHeightChange(e) {

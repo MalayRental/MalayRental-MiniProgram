@@ -50,11 +50,17 @@
                 bindtap="previewImage"
                 data-url="{{item.imageUrl}}"
               ></image>
+
+           
             </view>
             <text class="message-time">{{item.time}}</text>
           </view>
+
         </view>
+   
       </block>
+     
+    
     </view>
   
     <!-- 空消息提示 -->

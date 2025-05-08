@@ -379,10 +379,10 @@ Page({
           reject(new Error('请求超时'));
         }, 15000); // 15秒超时
       });
-      
+      //封装title变量 进行监听事件
+      const initTitle=this.data.houseInfo.title;
       // 尝试创建会话
-      const initialMessage = `您好，我对"${this.data.houseInfo.title}"很感兴趣，可以了解更多信息吗？`;
-      
+      const initialMessage = `您好，我对"${initTitle}"很感兴趣，可以了解更多信息吗？`;
       // 将API请求和超时Promise一起处理
       Promise.race([
         api.createConversation(staffId, initialMessage),
@@ -393,6 +393,7 @@ Page({
           
           if (res.success && res.data) {
             console.log('创建会话成功：', res.data);
+           
             
             // 确保res.data.conversationId存在
             const conversationId = res.data.conversationId;
