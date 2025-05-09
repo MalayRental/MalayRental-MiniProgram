@@ -35,36 +35,29 @@
       <block wx:for="{{messages}}" wx:key="id">
         <view class="message-item {{item.isSelf ? 'self' : 'other'}}">
           <view class="message-info">
-            <!-- 根据消息类型显示不同内容 -->
-            <view class="message-bubble {{item.isImage ? 'image-bubble' : ''}}">
-              <!-- 文本消息 -->
-              <text bindtap="onCardClick"  wx:if="{{!item.isImage}}" class="message-content">{{item.content}}</text>
-              <!-- 图片消息 -->
-              <image 
-                wx:if="{{item.isImage}}" 
-                class="message-image" 
-                src="{{item.imageUrl}}" 
-                mode="widthFix" 
-                lazy-load="true"
-                binderror="onImageError"
-                bindtap="previewImage"
-                data-url="{{item.imageUrl}}"
-              ></image>
-              <!-- 卡片消息 -->
-              <view wx:if="{{item.isCard}}" class="message-card" data-link="{{item.cardData.link}}">
-                <image class="card-image" src="{{item.cardData.imageUrl}}" mode="aspectFill" />
-                <view class="card-content">
-                  <text class="card-title">{{item.cardData.title}}</text>
-                  <text class="card-desc">{{item.cardData.desc}}</text>
-                </view>
+            <block wx:if="{{!item.isCard}}">
+              <view class="message-bubble {{item.isImage ? 'image-bubble' : ''}}">
+                <!-- 文本消息 -->
+                <text bindtap="onCardClick"  wx:if="{{!item.isImage}}" class="message-content">{{item.content}}</text>
+                <!-- 图片消息 -->
+                <image 
+                  wx:if="{{item.isImage}}" 
+                  class="message-image" 
+                  src="{{item.imageUrl}}" 
+                  mode="widthFix" 
+                  lazy-load="true"
+                  binderror="onImageError"
+                  bindtap="previewImage"
+                  data-url="{{item.imageUrl}}"
+                ></image>
               </view>
-              <!-- 标识符立即删 -->
-      
-
-     
-
-
-           
+            </block>
+            <view wx:if="{{item.isCard && item.cardData}}" class="message-card" bindtap="onCardTap" data-houseid="{{item.cardData.houseId}}">
+              <image class="card-image" src="{{item.cardData.imageUrl}}" mode="aspectFill" />
+              <view class="card-content">
+                <text class="card-title">{{item.cardData.title}}</text>
+                <text class="card-desc">{{item.cardData.price}}</text>
+              </view>
             </view>
             <text class="message-time">{{item.time}}</text>
           </view>

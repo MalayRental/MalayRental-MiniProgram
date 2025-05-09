@@ -382,7 +382,7 @@ Page({
       //封装title变量 进行监听事件
       const initTitle=this.data.houseInfo.title;
       // 尝试创建会话
-      const initialMessage = `您好，我对"${initTitle}"很感兴趣，可以了解更多信息吗？`;
+      const initialMessage = `[CARD][WANT][${this.data.id}]`;
       // 将API请求和超时Promise一起处理
       Promise.race([
         api.createConversation(staffId, initialMessage),
@@ -406,7 +406,10 @@ Page({
               });
               return;
             }
-            
+            // 新增：会话创建成功后再发一条文本消息
+            const houseTitle = this.data.houseInfo.title;
+            const textMsg = `您好，我对"${houseTitle}"很感兴趣可以了解更多信息吗?`;
+            api.sendMessage(conversationId, textMsg);
             // 成功创建会话后，跳转到聊天页面
             wx.navigateTo({
               url: `/pages/message/chat?id=${conversationId}&name=${userName}`

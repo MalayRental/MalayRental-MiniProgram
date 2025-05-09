@@ -222,6 +222,7 @@ const shuffleArray = (array) => {
 module.exports = {
   adaptHouseList,
   adaptAreaOptions,
+  ensureFullImageUrl,
   ensureFullAvatarUrl,
   formatHistoryTime
 }; 

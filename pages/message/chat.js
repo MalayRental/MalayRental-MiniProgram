@@ -1,44 +1,24 @@
 // 导入API模块
 const { api, getCurrentUserId, BASE_URL, isUserLoggedIn } = require('../../utils/request');
+const ensureFullImageUrl = require('../../utils/dataAdapter').ensureFullImageUrl;
 
 // 从API URL中提取基础服务器URL
 const SERVER_URL = BASE_URL.replace('/api', '');
 
 Page({
   data: {
-    chatId: '',
-    chatName: '',
-    messages: [
-      {
-        id: 1,
-        isSelf: true,
-        isImage: false,
-        isCard: true, // 新增卡片类型标识
-        cardData: {   // 卡片数据
-          title: "标题",
-          desc: "描述文字",
-          imageUrl: "图片URL",
-          link: "跳转链接"
-        },
-        time: "12:00"
-      }
-     ],
-   
-    inputValue: '',
-    navBarHeight: 0,
-    loading: false,
-    error: '',
-    sending: false,
-    currentUserId: '', // 添加当前用户ID
-    refreshTimer: null, // 定时刷新的定时器
-    lastMessageId: '', // 记录最后一条消息ID，用于判断是否有新消息
-    isLoggedIn: false ,// 添加登录状态标记
- 
-
- 
-    
-    
-
+    chatId: '',           // 当前会话（聊天）的ID，标识和谁聊天
+    chatName: '',         // 当前会话的名称（如对方昵称或群名）
+    messages: [],         // 聊天消息列表，存储所有消息（文本、图片、卡片等）
+    inputValue: '',       // 输入框当前内容（用户正在输入的消息）
+    navBarHeight: 0,      // 自定义导航栏的高度，适配不同设备
+    loading: false,       // 是否正在加载数据（如消息、历史记录等）
+    error: '',            // 错误信息（如加载失败时显示的提示）
+    sending: false,       // 是否正在发送消息（防止重复点击）
+    currentUserId: '',    // 当前登录用户的ID，用于区分消息归属
+    refreshTimer: null,   // 定时刷新消息的定时器对象
+    lastMessageId: '',    // 最后一条消息的ID，用于判断是否有新消息
+    isLoggedIn: false     // 当前用户是否已登录
   },
   
   onLoad(options) {
@@ -131,39 +111,58 @@ Page({
     if (!silent) {
       this.setData({ loading: true, error: '' });
     }
-    
+    const that = this;
     api.getConversationById(this.data.chatId)
-      .then(res => {
+      .then(async res => {
         if (res.success && res.data) {
           // 后端返回的消息已经按时间排序
-          const formattedMessages = res.data.messages.map(msg => {
+          // 先处理所有消息，遇到[CARD][WANT][HOUSE_ID]时异步获取房源
+          const formattedMessages = await Promise.all(res.data.messages.map(async msg => {
             // 检查是否为图片消息
             const isImageMsg = msg.content.startsWith('[IMAGE]');
-            //检查是否是卡片内容
+            // 检查是否为卡片内容
             const isCardMsg = msg.content.startsWith('[CARD]');
             let cardData = null;
             let imageUrl = '';
-            
+
             if (isImageMsg) {
               // 从消息内容提取图片文件名
-              // 格式为[IMAGE]filename.jpg
               const imageFilename = msg.content.substring(7); // 去掉[IMAGE]前缀
-              // 构建完整的图片URL - 使用完整的绝对URL路径
               imageUrl = `${SERVER_URL}/uploads/chat/${imageFilename}`;
-            }else if (isCardMsg) {
-              // 卡片消息处理
-              try {
-    
-                // 假设卡片消息格式为 [CARD]{JSON数据}
-                const cardJson = msg.content.substring(6); // 去掉[CARD]前缀
-                cardData =JSON.parse(cardJson);
-                console.log(cardData);
-                console.log(msg.content);
-              } catch (e) {
-                console.error('解析卡片消息失败:', e);
+            } else if (isCardMsg) {
+              // 处理[CARD][WANT][HOUSE_ID]格式
+              if (msg.content.startsWith('[CARD][WANT][')) {
+                const match = msg.content.match(/\[CARD\]\[WANT\]\[(.+?)\]/);
+                if (match && match[1]) {
+                  const houseId = match[1];
+                  try {
+                    // 使用api.getHouseDetail获取房源信息
+                    const houseRes = await api.getHouseDetail(houseId);
+                    const houseData = houseRes.data;
+                    if (houseData) {
+                      cardData = {
+                        title: houseData.title,
+                        desc: houseData.area + ' ' + houseData.roomType + ' ' + houseData.size + '㎡',
+                        imageUrl: ensureFullImageUrl(houseData.coverImage),
+                        price: houseData.price + houseData.priceUnit,
+                        houseId: houseData.id
+                      };
+                    }
+                  } catch (e) {
+                    console.error('获取房源卡片信息失败:', e);
+                  }
+                }
+              } else {
+                // 兼容原有[CARD]{JSON}格式
+                try {
+                  const cardJson = msg.content.substring(6); // 去掉[CARD]前缀
+                  cardData = JSON.parse(cardJson);
+                } catch (e) {
+                  console.error('解析卡片消息失败:', e);
+                }
               }
             }
-            
+
             return {
               id: msg.id,
               content: msg.content,
@@ -171,31 +170,30 @@ Page({
               isSelf: msg.isFromMe,
               isImage: isImageMsg,
               imageUrl: imageUrl,
-              isCard: isCardMsg, // 新增卡片标识
-              cardData: cardData // 卡片数据对象
+              isCard: isCardMsg,
+              cardData: cardData
             };
-          });
-          
+          }));
+
           // 检查是否有新消息
-          const hasNewMessages = formattedMessages.length > 0 && 
+          const hasNewMessages = formattedMessages.length > 0 &&
             (formattedMessages[formattedMessages.length - 1].id !== this.data.lastMessageId);
-          
+
           // 更新最后一条消息ID
-          const lastMessageId = formattedMessages.length > 0 ? 
+          const lastMessageId = formattedMessages.length > 0 ?
             formattedMessages[formattedMessages.length - 1].id : '';
-          
+
           this.setData({
             messages: formattedMessages,
             loading: false,
             lastMessageId
           });
-          
+
           // 如果有新消息，滚动到底部
           if (hasNewMessages) {
             setTimeout(() => this.scrollToBottom(), 200);
           }
         } else {
-          // 只有非静默刷新时才显示错误
           if (!silent) {
             this.setData({
               error: '获取聊天记录失败',
@@ -206,7 +204,6 @@ Page({
       })
       .catch(err => {
         console.error('获取聊天记录出错：', err);
-        // 只有非静默刷新时才显示错误
         if (!silent) {
           this.setData({
             error: err.message || '网络错误，请稍后再试',
@@ -574,22 +571,21 @@ Page({
         wx.hideLoading();
       });
   },
-  onCardClick() {
-    
-    this.sendCardMessage({
-      type: "product",
-      title: "苹果 AirPods Pro",
-      desc: "主动降噪，无线充电",
-      imageUrl: "https://example.com/airpods.jpg",
-    
-      price: "¥1999"
-    });
-  },
   
   // 跳转到登录页面
   goToLogin() {
     wx.navigateTo({
       url: '/pages/login/index?from=chat'
     });
-  }
+  },
+
+  // 跳转到房源详情页面（卡片点击）
+  onCardTap(e) {
+    const houseId = e.currentTarget.dataset.houseid;
+    if (houseId) {
+      wx.navigateTo({
+        url: `/pages/houseDetail/index?id=${houseId}`
+      });
+    }
+  },
 }); 
