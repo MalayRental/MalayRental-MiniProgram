@@ -6,11 +6,9 @@ const { adaptHouseList, adaptAreaOptions } = require('../../utils/dataAdapter');
 Page({
   data: {
     banners: [
-      '/images/lbt/Bing_0028.jpeg',
-      '/images/lbt/Bing_0031.jpeg',
-      '/images/lbt/Bing_0036.png',
-      '/images/lbt/Bing_0039.jpeg',
-      '/images/lbt/Bing_0038.jpeg'
+      'https://img.picui.cn/free/2025/05/09/681da2a6944de.jpeg',
+      'https://img.picui.cn/free/2025/05/09/681da2a758d92.png',
+      'https://img.picui.cn/free/2025/05/09/681da2a749ab0.jpeg'
     ],
     houses: [],
     searchValue: '',
