@@ -38,7 +38,7 @@
             <!-- 根据消息类型显示不同内容 -->
             <view class="message-bubble {{item.isImage ? 'image-bubble' : ''}}">
               <!-- 文本消息 -->
-              <text wx:if="{{!item.isImage}}" class="message-content">{{item.content}}</text>
+              <text bindtap="onCardClick"  wx:if="{{!item.isImage}}" class="message-content">{{item.content}}</text>
               <!-- 图片消息 -->
               <image 
                 wx:if="{{item.isImage}}" 
@@ -50,6 +50,19 @@
                 bindtap="previewImage"
                 data-url="{{item.imageUrl}}"
               ></image>
+              <!-- 卡片消息 -->
+              <view wx:if="{{item.isCard}}" class="message-card" data-link="{{item.cardData.link}}">
+                <image class="card-image" src="{{item.cardData.imageUrl}}" mode="aspectFill" />
+                <view class="card-content">
+                  <text class="card-title">{{item.cardData.title}}</text>
+                  <text class="card-desc">{{item.cardData.desc}}</text>
+                </view>
+              </view>
+              <!-- 标识符立即删 -->
+      
+
+     
+
 
            
             </view>

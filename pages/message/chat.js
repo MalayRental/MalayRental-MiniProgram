@@ -8,7 +8,22 @@ Page({
   data: {
     chatId: '',
     chatName: '',
-    messages: [],
+    messages: [
+      {
+        id: 1,
+        isSelf: true,
+        isImage: false,
+        isCard: true, // 新增卡片类型标识
+        cardData: {   // 卡片数据
+          title: "标题",
+          desc: "描述文字",
+          imageUrl: "图片URL",
+          link: "跳转链接"
+        },
+        time: "12:00"
+      }
+     ],
+   
     inputValue: '',
     navBarHeight: 0,
     loading: false,
@@ -17,7 +32,13 @@ Page({
     currentUserId: '', // 添加当前用户ID
     refreshTimer: null, // 定时刷新的定时器
     lastMessageId: '', // 记录最后一条消息ID，用于判断是否有新消息
-    isLoggedIn: false // 添加登录状态标记
+    isLoggedIn: false ,// 添加登录状态标记
+ 
+
+ 
+    
+    
+
   },
   
   onLoad(options) {
@@ -118,6 +139,9 @@ Page({
           const formattedMessages = res.data.messages.map(msg => {
             // 检查是否为图片消息
             const isImageMsg = msg.content.startsWith('[IMAGE]');
+            //检查是否是卡片内容
+            const isCardMsg = msg.content.startsWith('[CARD]');
+            let cardData = null;
             let imageUrl = '';
             
             if (isImageMsg) {
@@ -126,6 +150,18 @@ Page({
               const imageFilename = msg.content.substring(7); // 去掉[IMAGE]前缀
               // 构建完整的图片URL - 使用完整的绝对URL路径
               imageUrl = `${SERVER_URL}/uploads/chat/${imageFilename}`;
+            }else if (isCardMsg) {
+              // 卡片消息处理
+              try {
+    
+                // 假设卡片消息格式为 [CARD]{JSON数据}
+                const cardJson = msg.content.substring(6); // 去掉[CARD]前缀
+                cardData =JSON.parse(cardJson);
+                console.log(cardData);
+                console.log(msg.content);
+              } catch (e) {
+                console.error('解析卡片消息失败:', e);
+              }
             }
             
             return {
@@ -134,7 +170,9 @@ Page({
               time: this.formatMessageTime(msg.timestamp),
               isSelf: msg.isFromMe,
               isImage: isImageMsg,
-              imageUrl: imageUrl
+              imageUrl: imageUrl,
+              isCard: isCardMsg, // 新增卡片标识
+              cardData: cardData // 卡片数据对象
             };
           });
           
@@ -257,7 +295,7 @@ Page({
         success: (res) => {
           if (res.confirm) {
             // 跳转到登录页面
-            this.goToLogin();
+            this.goToLogin(); 
           }
         }
       });
@@ -271,6 +309,7 @@ Page({
     }
     
     this.setData({ sending: true });
+
     
     api.sendMessage(chatId, inputValue)
       .then(res => {
@@ -293,9 +332,9 @@ Page({
             time: this.formatMessageTime(res.data.timestamp),
             isSelf: true,
             isImage: isImageMsg,
-            imageUrl: imageUrl
-          };
+            imageUrl: imageUrl,
           
+          };
           const messages = [...this.data.messages, newMessage];
           
           this.setData({
@@ -324,6 +363,41 @@ Page({
         this.setData({ sending: false });
       });
   },
+
+  //发送卡片、
+  sendCardMessage(cardData) {
+    if (!this.data.isLoggedIn) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      return;
+    }
+
+    const cardContent = `[CARD]${JSON.stringify(cardData)}`; //将卡片内容序列化
+    this.setData({ sending: true });
+
+    api.sendMessage(this.data.chatId, cardContent)
+      .then(res => {
+        if (res.success) {
+          const newMessage = {
+            id: res.data.id,
+            content: cardContent, // 原始内容
+            time: this.formatTime(new Date()),
+            isSelf: true,
+            isCard: true,
+            cardData: cardData // 结构化数据
+          };
+          this.addNewMessage(newMessage);
+        }
+      })
+      .catch(err => {
+        wx.showToast({ title: '发送失败', icon: 'none' });
+      })
+      .finally(() => {
+        this.setData({ sending: false });
+      });
+  },
+ 
+
+  
   
   // 图片加载错误处理
   onImageError(e) {
@@ -346,6 +420,9 @@ Page({
       urls: [url]
     });
   },
+  
+    
+    
   
   // 发送图片消息
   sendImageMessage() {
@@ -496,6 +573,17 @@ Page({
         });
         wx.hideLoading();
       });
+  },
+  onCardClick() {
+    
+    this.sendCardMessage({
+      type: "product",
+      title: "苹果 AirPods Pro",
+      desc: "主动降噪，无线充电",
+      imageUrl: "https://example.com/airpods.jpg",
+    
+      price: "¥1999"
+    });
   },
   
   // 跳转到登录页面

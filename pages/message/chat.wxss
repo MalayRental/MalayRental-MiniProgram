@@ -183,3 +183,35 @@
 .send-button.active {
   transform: scale(1.05);
 } 
+
+/* 卡片消息样式 */
+.message-card {
+  width: 280rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.card-image {
+  width: 100%;
+  height: 160rpx;
+  display: block;
+}
+
+.card-content {
+  padding: 16rpx;
+}
+
+.card-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.card-desc {
+  font-size: 24rpx;
+  color: #666;
+  display: block;
+}
