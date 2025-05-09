@@ -1,12 +1,2 @@
-*.ts
-*.wxss
-miniprogram_npm/tdesign-miniprogram/checkbox-group/checkbox-group.wxml
-miniprogram_npm/tdesign-miniprogram/checkbox-group/props.js
-miniprogram_npm/tdesign-miniprogram/checkbox-group/type.js
-/miniprogram_npm/tdesign-miniprogram
-node_modules/tdesign-miniprogram/miniprogram_dist/checkbox-group/checkbox-group.json
-node_modules/tdesign-miniprogram/miniprogram_dist/checkbox-group/checkbox-group.wxml
-node_modules/tdesign-miniprogram/miniprogram_dist/checkbox-group/props.js
-/node_modules/tdesign-miniprogram/miniprogram_dist/back-top
-/node_modules/tdesign-miniprogram
-node_modules/.package-lock.json
+miniprogram_npm/
+node_modules/
