@@ -3,7 +3,7 @@
   <custom-navbar title="消息" solidGradient="{{true}}" showHome="{{true}}" bind:heightChange="onNavBarHeightChange"></custom-navbar>
   
   <!-- 未登录状态 -->
-  <view class="not-login-container" wx:if="{{!isLoggedIn}}">
+  <view class="not-login-container" wx:if="{{!isLoggedIn}}" style="margin-top: {{navBarHeight}}rpx;">
     <view class="not-login-content">
       <image src="/images/message-empty.png" class="not-login-image" mode="aspectFit"></image>
       <view class="not-login-title">登录后查看您的消息</view>
@@ -13,9 +13,15 @@
   </view>
   
   <!-- 已登录状态 -->
-  <view wx:else>
+  <view class="logged-in-container" wx:else style="margin-top: {{navBarHeight}}rpx;">
+    <!-- 网络错误提示 -->
+    <view class="network-error" wx:if="{{hasNetworkError}}">
+      <t-icon name="error-circle-filled" size="32rpx" color="#fa5151" />
+      <text>网络连接失败，请检查网络设置</text>
+    </view>
+    
     <!-- 加载中 -->
-    <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-container" wx:if="{{loading && !isRefreshing}}">
       <t-loading theme="circular" size="40rpx" loading="{{loading}}" />
     </view>
     
@@ -26,26 +32,30 @@
       <t-button size="small" theme="primary" bindtap="fetchConversations">重新加载</t-button>
     </view>
     
-    <view class="message-list" style="margin-top: {{navBarHeight ? 45 : 45}}rpx;">
+    <!-- 消息列表 -->
+    <view class="message-list">
       <block wx:if="{{messageList.length > 0}}">
         <view 
-          class="message-item" 
+          class="message-item {{index === messageList.length - 1 ? 'last-message-item' : ''}}" 
           wx:for="{{messageList}}" 
           wx:key="id" 
           bindtap="onTapMessage" 
           data-id="{{item.id}}"
           data-name="{{item.sender.name}}"
+          hover-class="message-item-hover"
         >
           <view class="avatar-container">
             <t-avatar image="{{item.sender.avatar}}" size="medium" />
-            <view class="badge" wx:if="{{item.unread > 0}}">{{item.unread}}</view>
+            <view class="badge" wx:if="{{item.unread > 0}}">{{item.displayUnread}}</view>
           </view>
           <view class="message-content">
             <view class="message-header">
               <text class="sender-name">{{item.sender.name}}</text>
               <text class="message-time">{{item.lastTime}}</text>
             </view>
-            <text class="message-text">{{item.lastMessage}}</text>
+            <text class="message-text {{!item.lastMessage ? 'no-message' : ''}}">
+              {{item.lastMessage || '暂无消息内容'}}
+            </text>
           </view>
         </view>
       </block>
