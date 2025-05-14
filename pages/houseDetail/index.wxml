@@ -1,171 +1,119 @@
-<view class="detail-container">
-  <!-- 自定义导航栏 -->
-  <custom-navbar 
-    title="房源详情" 
-    showBack="{{true}}" 
-    solidGradient="{{true}}"
-    bind:heightChange="onNavBarHeightChange"
-  ></custom-navbar>
-  
-  <!-- 加载中提示 -->
-  <view class="loading-container" wx:if="{{loading}}">
-    <t-loading theme="circular" size="80rpx" loading="{{loading}}" />
+<!-- 房源详情页 -->
+<navigation-bar title="房源详情" back="{{true}}" background="#4ac924" color="#fff"></navigation-bar>
+<view class="house-detail-container">
+  <!-- 顶部轮播图 -->
+  <swiper class="banner-swiper" indicator-dots="{{true}}" autoplay="{{true}}" interval="{{3000}}" duration="{{500}}" circular="{{true}}">
+    <block wx:for="{{house.images}}" wx:key="*this">
+      <swiper-item>
+        <image src="{{item}}" class="banner-image" mode="aspectFill" bindtap="previewImage" data-current="{{item}}"></image>
+      </swiper-item>
+    </block>
+  </swiper>
+
+  <!-- 基本信息 -->
+  <view class="info-section">
+    <view class="house-name">{{house.houseName}}</view>
+    <view class="house-price">{{house.price}} RM/月</view>
+    
+    <!-- 标签 -->
+    <view class="tags-container">
+      <block wx:for="{{house.tags}}" wx:key="*this">
+        <view class="tag">{{item}}</view>
+      </block>
+    </view>
+    
+    <!-- 基本信息项 -->
+    <view class="info-items">
+      <view class="info-item">
+        <view class="info-label">区域</view>
+        <view class="info-value">{{house.area}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-label">朝向</view>
+        <view class="info-value">{{house.orientation}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-label">面积</view>
+        <view class="info-value">{{house.proportion}}m²</view>
+      </view>
+    </view>
   </view>
-  
-  <!-- 错误提示 -->
-  <view class="error-container" wx:if="{{error && !loading}}">
-    <t-icon name="error-circle" size="80rpx" />
-    <view class="error-text">{{error}}</view>
-    <t-button size="small" theme="primary" bindtap="retryFetchHouseDetail">重新加载</t-button>
+
+  <!-- 地址和入住时间 -->
+  <view class="detail-section">
+    <view class="section-title">详细信息</view>
+    <view class="detail-items">
+      <view class="detail-item">
+        <view class="detail-label">详细地址</view>
+        <view class="detail-value">{{house.address}}</view>
+      </view>
+      <view class="detail-item">
+        <view class="detail-label">可入住时间</view>
+        <view class="detail-value">{{house.moveInDate}}</view>
+      </view>
+      <view class="detail-item">
+        <view class="detail-label">付款方式</view>
+        <view class="detail-value">
+          <text wx:for="{{house.paymentMethod}}" wx:key="*this" class="payment-method">{{item}}</text>
+        </view>
+      </view>
+    </view>
   </view>
-  
-  <!-- 房源详情内容 -->
-  <block wx:if="{{houseInfo && !loading && !error}}">
-    <!-- 轮播图 -->
-    <view class="swiper-container">
-      <swiper
-        current="{{swiperCurrent}}"
-        autoplay="{{true}}"
-        interval="5000"
-        duration="500"
-        indicator-dots="{{true}}"
-        indicator-color="rgba(255, 255, 255, 0.6)"
-        indicator-active-color="#ffffff"
-        bindchange="onSwiperChange"
-        class="swiper"
-      >
-        <swiper-item wx:for="{{houseInfo.images}}" wx:key="*this">
-          <image src="{{item}}" class="swiper-image" mode="aspectFill" lazy-load="{{true}}" />
-        </swiper-item>
-      </swiper>
-      <view class="image-counter">{{swiperCurrent + 1}}/{{houseInfo.images.length}}</view>
+
+  <!-- 附加设施 -->
+  <view class="facility-section">
+    <view class="section-title">附加设施</view>
+    <view class="facility-items">
+      <block wx:for="{{house.facilities}}" wx:key="*this">
+        <view class="facility-item">{{item}}</view>
+      </block>
     </view>
+  </view>
 
-    <!-- 主内容区 -->
-    <view class="content-container">
-      <!-- 房源标题和价格信息 -->
-      <view class="card house-header-card">
-        <view class="house-header">
-          <view class="house-title">{{houseInfo.title}}</view>
-          <view class="house-price"><text class="price-value">{{houseInfo.price}}</text> {{houseInfo.priceUnit}}</view>
-        </view>
+  <!-- 所在小区 -->
+  <view class="community-section">
+    <view class="section-title">所在小区</view>
+    <view class="community-value">{{house.community}}</view>
+  </view>
 
-        <!-- 房源标签 -->
-        <view class="house-tags">
-          <t-tag wx:for="{{houseInfo.tags}}" wx:key="*this" size="medium" variant="light" class="tag">{{item}}</t-tag>
-        </view>
+  <!-- 详细介绍 -->
+  <view class="introduction-section">
+    <view class="section-title">详细介绍</view>
+    <view class="introduction-content">{{house.introduction}}</view>
+  </view>
+
+  <!-- 其他信息 -->
+  <view class="other-section">
+    <view class="section-title">其他信息</view>
+    <view class="other-items">
+      <view class="other-item">
+        <view class="other-label">中介费</view>
+        <view class="other-value">{{house.brokerageFee}}</view>
       </view>
-
-      <!-- 付款信息 -->
-      <view class="card payment-card">
-        <view class="section-title">付款信息</view>
-        <view class="payment-info">
-          <view class="info-row">
-            <view class="info-label">押金</view>
-            <view class="info-value">{{houseInfo.deposit}}{{isNaN(houseInfo.deposit) ? '' : ' RM'}}</view>
-          </view>
-          <view class="info-row">
-            <view class="info-label">支付方式</view>
-            <view class="info-value">{{houseInfo.paymentMethod || '月付 / 季付 / 年付'}}</view>
-          </view>
-        </view>
+      <view class="other-item">
+        <view class="other-label">上传时间</view>
+        <view class="other-value">{{house.uploadTime}}</view>
       </view>
-
-      <!-- 房源基本信息 -->
-      <view class="card basic-info-card">
-        <view class="section-title">房源信息</view>
-        <view class="basic-info-grid">
-          <view class="info-grid-item">
-            <view class="info-label">房源ID</view>
-            <view class="info-value">{{houseInfo.id}}</view>
-          </view>
-          <view class="info-grid-item">
-            <view class="info-label">房屋面积</view>
-            <view class="info-value">{{houseInfo.size}}㎡</view>
-          </view>
-          <view class="info-grid-item">
-            <view class="info-label">房型</view>
-            <view class="info-value">{{houseInfo.roomType}}</view>
-          </view>
-          <view class="info-grid-item">
-            <view class="info-label">朝向</view>
-            <view class="info-value">{{houseInfo.orientation}}</view>
-          </view>
-          <view class="info-grid-item">
-            <view class="info-label">所在区域</view>
-            <view class="info-value">{{houseInfo.area}}</view>
-          </view>
-          <view class="info-grid-item">
-            <view class="info-label">发布日期</view>
-            <view class="info-value">{{houseInfo.createdAt}}</view>
-          </view>
-          <view class="info-grid-item">
-            <view class="info-label">可入住日期</view>
-            <view class="info-value">{{houseInfo.availableDate}}</view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 设施配套 -->
-      <view class="card facilities-card">
-        <view class="section-title">设施配套</view>
-        <view class="facility-info">
-          <view class="elevator-info">
-            <view class="info-label">电梯</view>
-            <view class="info-value">{{houseInfo.hasElevator ? '有' : '无'}}</view>
-          </view>
-        </view>
-        <view class="facilities-list">
-          <view class="facility-item" wx:for="{{houseInfo.facilities}}" wx:key="index">
-            <t-icon name="check-circle" color="#0052D9" size="40rpx" />
-            <text>{{item}}</text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 房源详细描述 -->
-      <view class="card description-card">
-        <view class="section-title">详细介绍</view>
-        <view class="section-content">{{houseInfo.description}}</view>
-      </view>
-
-      <!-- 房东信息 -->
-      <view class="card landlord-card">
-        <view class="section-title">联系人信息</view>
-        <view class="landlord-info">
-          <t-avatar image="{{contactInfo.avatar}}" size="large" />
-          <view class="landlord-detail">
-            <view class="landlord-name">{{contactInfo.name}}</view>
-            <view class="landlord-phone">账号: {{contactInfo.account}}</view>
-          </view>
-        </view>
-      </view>
-      
-      <!-- 底部安全区占位 -->
-      <view class="bottom-safe-area"></view>
-    </view>
-
-    <!-- 底部操作栏 -->
-    <view class="bottom-bar">
-      <view class="bottom-bar-content">
-        <view class="action-buttons">
-          <view class="action-button favorite" bindtap="toggleFavorite">
-            <t-icon name="{{isFavorite ? 'heart-filled' : 'heart'}}" color="{{isFavorite ? '#FF4D4F' : '#888'}}" size="48rpx" />
-            <text>收藏</text>
-          </view>
-          <view class="action-button" bindtap="callContact">
-            <t-icon name="call" color="#888" size="48rpx" />
-            <text>联系</text>
-          </view>
-          <view class="action-button" bindtap="contactChat">
-            <t-icon name="chat" color="#888" size="48rpx" />
-            <text>在线聊</text>
-          </view>
-        </view>
-        <view class="appointment-button" bindtap="makeAppointment">
-          <text>预约看房</text>
-        </view>
+      <view class="other-item">
+        <view class="other-label">最后更新</view>
+        <view class="other-value">{{house.lastUpdate}}</view>
       </view>
     </view>
-  </block>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-action-bar">
+    <view class="action-item collect" bindtap="toggleCollect">
+      <image src="{{isCollected ? '/assets/icons/star-filled.png' : '/assets/icons/star.png'}}" class="action-icon"></image>
+      <text>收藏</text>
+    </view>
+    <view class="action-item chat" bindtap="onlineChat">
+      <image src="/assets/icons/chat.png" class="action-icon"></image>
+      <text>在线聊</text>
+    </view>
+    <view class="action-item call" bindtap="phoneCall">
+      <image src="/assets/icons/phone.png" class="action-icon"></image>
+      <text>电话聊</text>
+    </view>
+  </view>
 </view> 

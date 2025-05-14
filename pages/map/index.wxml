@@ -1,0 +1,75 @@
+<!--map.wxml-->
+<!-- 自定义导航栏 -->
+<navigation-bar title="地图找房" back="{{true}}" background="#4ac924" color="#ffffff"></navigation-bar>
+
+<view class="map-container">
+  <map 
+    id="houseMap"
+    latitude="{{latitude}}"
+    longitude="{{longitude}}"
+    scale="{{scale}}"
+    markers="{{markers}}"
+    bindmarkertap="onMarkerTap"
+    bindcallouttap="onMarkerTap"
+    bindtap="onTapMap"
+    show-location
+    style="width: 100%; height: 100%;">
+  </map>
+  
+  <!-- 加载状态提示 -->
+  <view class="loading-container" wx:if="{{loadingHouses}}">
+    <view class="loading-box">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">正在加载房源数据...</text>
+    </view>
+  </view>
+
+  <!-- 房源信息弹窗 -->
+  <view class="house-info-panel {{showHouseInfo ? 'show' : ''}}" catchtap="stopEvent">
+    <view class="panel-header" wx:if="{{currentHouse}}">
+      <text class="house-title">{{currentHouse.title || currentHouse.houseName}}</text>
+      <text class="close-btn" bindtap="closeHouseInfo">×</text>
+    </view>
+    
+    <view class="panel-body" wx:if="{{currentHouse}}">
+      <!-- 房源图片 -->
+      <view class="house-image">
+        <image src="{{currentHouse.imgUrl || defaultImage}}" mode="aspectFill"></image>
+      </view>
+      
+      <view class="price-box">
+        <text class="price">RM{{currentHouse.price}}</text>
+        <text class="price-unit">/月</text>
+      </view>
+      
+      <view class="house-info">
+        <view class="info-item">
+          <text class="item-label">面积：</text>
+          <text class="item-value">{{currentHouse.size || currentHouse.area}}㎡</text>
+        </view>
+        <view class="info-item">
+          <text class="item-label">户型：</text>
+          <text class="item-value">{{currentHouse.rooms || currentHouse.proportion}}</text>
+        </view>
+        <view class="info-item">
+          <text class="item-label">楼层：</text>
+          <text class="item-value">{{currentHouse.floor || '暂无'}}</text>
+        </view>
+        <view class="info-item">
+          <text class="item-label">装修：</text>
+          <text class="item-value">{{currentHouse.type || '暂无'}}</text>
+        </view>
+        <view class="info-item full-width">
+          <text class="item-label">地址：</text>
+          <text class="item-value">{{currentHouse.address || '暂无详细地址'}}</text>
+        </view>
+        <view class="info-item full-width">
+          <text class="item-label">描述：</text>
+          <text class="item-value">{{currentHouse.description || '暂无详细描述'}}</text>
+        </view>
+      </view>
+      
+      <button class="detail-btn" bindtap="viewHouseDetail">查看详情</button>
+    </view>
+  </view>
+</view> 

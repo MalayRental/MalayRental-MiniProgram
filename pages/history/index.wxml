@@ -1,0 +1,61 @@
+<!-- 浏览历史页面 -->
+<navigation-bar title="浏览历史" back="{{true}}" background="#4ac924" color="#fff"></navigation-bar>
+<view class="page-container">
+  <!-- 加载中 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading"></view>
+    <view class="loading-text">正在加载...</view>
+  </view>
+  
+  <!-- 空状态 -->
+  <view class="empty-container" wx:elif="{{isEmpty}}">
+    <image class="empty-image" src="/assets/icons/empty-history.png" mode="aspectFit"></image>
+    <view class="empty-text">暂无浏览记录</view>
+    <view class="empty-tip">浏览房源后将在这里显示</view>
+    <navigator url="/pages/home/index" open-type="switchTab" class="action-button">去浏览房源</navigator>
+  </view>
+  
+  <!-- 顶部清空按钮 -->
+  <view class="top-actions" wx:if="{{showClearBtn}}">
+    <view class="clear-all" bindtap="clearAllHistory">
+      <image class="clear-icon" src="/assets/icons/trash.png" mode="aspectFit"></image>
+      <text>清空浏览记录</text>
+    </view>
+  </view>
+  
+  <!-- 历史列表 (按日期分组显示) -->
+  <view class="history-list" wx:if="{{!isEmpty && !loading}}">
+    <block wx:for="{{groupedHistory}}" wx:key="date" wx:for-item="group">
+      <!-- 日期标题 -->
+      <view class="date-header">
+        <view class="date-text">{{group.displayDate}}</view>
+      </view>
+      
+      <!-- 当天的历史记录 -->
+      <view class="house-list">
+        <view class="house-item" wx:for="{{group.items}}" wx:key="id" bindtap="goToDetail" data-id="{{item.id}}">
+          <!-- 房源封面 -->
+          <image src="{{item.imageUrl}}" class="house-cover" mode="aspectFill"></image>
+          
+          <!-- 房源信息 -->
+          <view class="house-info">
+            <!-- 名称 -->
+            <view class="house-name">{{item.title}}</view>
+            
+            <!-- 区域 -->
+            <view class="house-area">{{item.address}}</view>
+            
+            <!-- 详细信息：户型、面积 -->
+            <view class="house-details">
+              <text class="house-orientation">{{item.roomType}}</text>
+              <text class="house-proportion">{{item.area}}{{item.areaUnit}}</text>
+            </view>
+            
+            <!-- 价格 -->
+            <view class="house-price">{{item.price}} {{item.priceUnit}}</view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view> 

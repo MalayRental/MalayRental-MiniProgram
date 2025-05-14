@@ -1,4 +1,4 @@
 {
-  "navigationBarTitleText": "大马租房",
-  "usingComponents": {}
+  "usingComponents": {},
+  "navigationStyle": "custom"
 } 

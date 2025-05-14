@@ -1,4 +1,11 @@
 /**app.wxss**/
+page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+  font-size: 28rpx;
+  color: #333333;
+  background-color: #f6f6f6;
+}
+
 .container {
   height: 100%;
   display: flex;
@@ -7,29 +14,77 @@
   justify-content: space-between;
   padding: 200rpx 0;
   box-sizing: border-box;
-} 
+}
 
-page {
-  --td-brand-color: #0052D9;
-  --td-brand-color-active: #003CAB;
-  --td-brand-color-disabled: #B7D0FF;
-  --td-brand-color-light: #ECF2FE;
-  --td-brand-color-focus: rgba(0, 82, 217, 0.2);
-  --td-warning-color: #FAAD14;
-  --td-warning-color-active: #E58A06;
-  --td-warning-color-disabled: #FFC672;
-  --td-warning-color-light: #FFF7E3;
-  --td-warning-color-focus: rgba(250, 173, 20, 0.2);
-  --td-error-color: #FF4D4F;
-  --td-error-color-active: #D32E30;
-  --td-error-color-disabled: #FFB8B8;
-  --td-error-color-light: #FFECEC;
-  --td-error-color-focus: rgba(255, 77, 79, 0.2);
-  --td-success-color: #52C41A;
-  --td-success-color-active: #448816;
-  --td-success-color-disabled: #8FDCA8;
-  --td-success-color-light: #E5F8E5;
-  --td-success-color-focus: rgba(82, 196, 26, 0.2);
-  
-  background-color: #f6f6f6;
+/* 通用样式 */
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-primary {
+  color: #4ac924;
+}
+
+.text-secondary {
+  color: #666666;
+}
+
+.text-muted {
+  color: #999999;
+}
+
+/* 自定义底部导航栏样式 */
+.tab-bar-item {
+  padding: 16rpx 0 4rpx !important;
+  position: relative;
+}
+
+.tab-bar-item image {
+  width: 44rpx !important;
+  height: 44rpx !important;
+  position: relative;
+  z-index: 2;
+}
+
+.tab-bar-item text {
+  font-size: 24rpx !important;
+  line-height: 30rpx !important;
+  position: relative;
+  z-index: 2;
+  margin-top: 4rpx;
+}
+
+/* 新增选中背景样式 */
+.tab-bar-item.active::before {
+  content: '';
+  position: absolute;
+  top: 40rpx !important;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 76rpx;
+  height: 76rpx;
+  background-color: rgba(74, 201, 36, 0.1);
+  border-radius: 50%;
+  z-index: 1;
 } 

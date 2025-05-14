@@ -1,262 +1,291 @@
-// const { houseList } = require('../../utils/mock/houses');
-// 导入API请求模块和数据适配器
-const { api } = require('../../utils/request');
-const { adaptHouseList, adaptAreaOptions } = require('../../utils/dataAdapter');
+const app = getApp()
+const { bannerService, houseAreaService, houseListService } = require('../../api/service/index');
 
 Page({
   data: {
-    banners: [
-      'https://img.picui.cn/free/2025/05/09/681da2a6944de.jpeg',
-      'https://img.picui.cn/free/2025/05/09/681da2a758d92.png',
-      'https://img.picui.cn/free/2025/05/09/681da2a749ab0.jpeg'
-    ],
-    houses: [],
-    searchValue: '',
-    activeTab: 0,
-    navBarHeight: 0, // 导航栏高度
-    filterData: {
-      area: '全部区域',
-      sort: '默认排序',
-      price: '全部价格',
-      room: '全部户型'
+    searchValue: '', // 搜索框的值
+    // 轮播图数据
+    banners: [],
+    // 筛选器数据
+    filters: {
+      locations: [],
+      selectedLocation: '全部位置',
+      rooms: ['不限', '1居', '2居', '3居+'],
+      selectedRoom: '不限',
+      features: ['双卫生间', 'loft/复式', '不看开间', '开间'],
+      selectedFeatures: [],
+      orientations: ['东', '西', '南', '北', '南北'],
+      selectedOrientations: [],
+      areas: ['≤40m²', '40-60m²', '60-80m²', '80-100m²', '100-120m²', '≥120m²'],
+      selectedAreas: [],
+      prices: ['不限', '≤1000RM', '1000-1500RM', '1500-2000RM', '2000-2500RM', '2500-3000RM', '≥3000RM'],
+      selectedPrice: '不限',
+      sorts: ['推荐排序', '最新发布', '价格（从低到高）', '价格（从高到低）', '面积（从小到大）', '面积（从大到小）'],
+      selectedSort: '推荐排序'
     },
-    areaOptions: ['全部区域', '吉隆坡', '槟城', '新山', '兰卡威', '怡保'],
-    sortOptions: ['默认排序', '价格从低到高', '价格从高到低', '面积从大到小', '面积从小到大'],
-    priceOptions: ['全部价格', '1000以下', '1000-2000', '2000-3000', '3000以上'],
-    roomOptions: ['全部户型', '1房', '2房', '3房', '4房及以上'],
-    showFilter: false,
-    currentFilterType: '',
-    loading: false, // 加载状态
-    error: '' // 错误信息
+    // 房源列表数据
+    houses: [],
+    filteredHouses: [] // 过滤后的房源列表
   },
 
-  onLoad() {
-    // 轮播图图片已在data中初始化为lbt下所有图片
-    this.fetchHouses();
-    this.fetchAreas();
+  onLoad: function() {
+    // 获取Banner数据
+    this.fetchBannerList();
+    // 获取区域列表
+    this.fetchAreaList();
+    // 获取房源列表
+    this.fetchHouseList();
   },
-  
-  onShow() {
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({
-        selected: 0
-      });
+
+  onShow: function() {
+    // 设置当前页面底部导航选中状态
+    if (typeof this.getTabBar === 'function') {
+      const tabBar = this.getTabBar();
+      if (tabBar) {
+        tabBar.setData({
+          selected: 0 // 首页的索引
+        });
+      }
     }
   },
 
-  // 从API获取房源数据
-  fetchHouses() {
-    this.setData({ loading: true, error: '' });
+  // 处理Banner点击事件
+  handleBannerTap: function(e) {
+    const index = e.currentTarget.dataset.index;
+    const banner = this.data.banners[index];
     
-    api.getHouses()
-      .then(res => {
-        if (res.success && res.data) {
-          // 使用适配器处理数据
-          const adaptedHouses = adaptHouseList(res.data);
-          this.setData({ 
-            houses: adaptedHouses,
-            loading: false
-          });
-        } else {
-          this.setData({ 
-            error: '获取房源失败',
-            loading: false
-          });
-        }
-      })
-      .catch(err => {
-        console.error('获取房源出错：', err);
-        this.setData({ 
-          error: err.message || '网络错误，请稍后再试',
-          loading: false
+    if (banner && banner.link) {
+      // 处理特殊导航链接格式 [NAVIGATE][pages/xxx/xxx]
+      if (banner.link.startsWith('[NAVIGATE][')) {
+        const pagePath = banner.link.substring(11, banner.link.length - 1);
+        console.log('导航到页面:', pagePath);
+        
+        // 跳转到对应页面
+        wx.navigateTo({
+          url: `/${pagePath}`,
+          fail: (err) => {
+            console.error('导航失败:', err);
+            wx.showToast({
+              title: '页面跳转失败',
+              icon: 'none'
+            });
+          }
         });
-      });
-  },
-  
-  // 从API获取区域数据
-  fetchAreas() {
-    api.getAllAreas()
-      .then(res => {
-        if (res.success && res.data) {
-          // 使用适配器处理区域数据
-          const areaOptions = adaptAreaOptions(res.data);
-          this.setData({ areaOptions });
-        }
-      })
-      .catch(err => {
-        console.error('获取区域出错：', err);
-      });
+      } else if (banner.link !== 'null') {
+        // 可以添加其他类型的链接处理，例如外部链接、小程序等
+        console.log('其他链接类型:', banner.link);
+      }
+    }
   },
 
-  // 接收导航栏高度变化
-  onNavBarHeightChange(e) {
+  // 处理搜索框输入
+  handleSearchInput: function(e) {
+    const value = e.detail.value;
     this.setData({
-      navBarHeight: e.detail.height
+      searchValue: value
+    });
+    this.searchHouses(value);
+  },
+
+  // 清空搜索框
+  clearSearch: function() {
+    this.setData({
+      searchValue: ''
+    });
+    this.searchHouses('');
+  },
+
+  // 根据输入搜索房源
+  searchHouses: function(keyword) {
+    if (!keyword) {
+      // 如果关键词为空，显示所有房源，但要考虑筛选条件
+      this.filterHouses();
+      return;
+    }
+
+    // 先基于筛选条件过滤
+    let result = this.getFilteredHouses();
+    
+    // 再根据关键词过滤
+    result = result.filter(item => {
+      return item.houseName.indexOf(keyword) !== -1;
+    });
+
+    this.setData({
+      filteredHouses: result
     });
   },
 
-  onSearch(e) {
-    const searchValue = e.detail.value;
-    this.setData({ searchValue });
+  // 获取根据筛选条件过滤后的房源列表
+  getFilteredHouses: function() {
+    // 这里应该根据筛选条件过滤房源列表
+    // 现在只是简单返回原始数据，实际应用中应该根据筛选条件进行筛选
+    return this.data.houses;
+  },
+
+  // 筛选器事件处理
+  handleFilterChange: function(e) {
+    const { type, value } = e.detail;
     
-    // 搜索实现
-    if (searchValue) {
-      this.fetchAndFilterHouses(searchValue);
+    // 根据筛选类型更新对应的数据
+    if (type === 'location') {
+      this.setData({
+        'filters.selectedLocation': value
+      });
+    } else if (type === 'room') {
+      this.setData({
+        'filters.selectedRoom': value
+      });
+    } else if (type === 'price') {
+      this.setData({
+        'filters.selectedPrice': value
+      });
+    } else if (type === 'sort') {
+      this.setData({
+        'filters.selectedSort': value
+      });
+    }
+    
+    // 更新过滤后的房源列表
+    this.filterHouses();
+  },
+
+  // 处理位置选择
+  handleLocationChange: function(e) {
+    const index = e.detail.value;
+    this.setData({
+      'filters.selectedLocation': this.data.filters.locations[index]
+    });
+    // 根据选择更新房源列表
+    this.filterHouses();
+  },
+
+  // 处理户型选择
+  handleRoomChange: function(e) {
+    const index = e.detail.value;
+    this.setData({
+      'filters.selectedRoom': this.data.filters.rooms[index]
+    });
+    // 根据选择更新房源列表
+    this.filterHouses();
+  },
+
+  // 处理价格选择
+  handlePriceChange: function(e) {
+    const index = e.detail.value;
+    this.setData({
+      'filters.selectedPrice': this.data.filters.prices[index]
+    });
+    // 根据选择更新房源列表
+    this.filterHouses();
+  },
+
+  // 处理排序选择
+  handleSortChange: function(e) {
+    const index = e.detail.value;
+    this.setData({
+      'filters.selectedSort': this.data.filters.sorts[index]
+    });
+    // 根据选择更新房源列表
+    this.filterHouses();
+  },
+
+  // 过滤房源列表
+  filterHouses: function() {
+    // 获取基于筛选条件过滤后的房源
+    const filteredHouses = this.getFilteredHouses();
+    
+    // 如果有搜索关键词，还需要基于关键词进一步过滤
+    if (this.data.searchValue) {
+      const keyword = this.data.searchValue;
+      const result = filteredHouses.filter(item => {
+        return item.houseName.indexOf(keyword) !== -1;
+      });
+      
+      this.setData({
+        filteredHouses: result
+      });
     } else {
-      this.fetchHouses();
+      this.setData({
+        filteredHouses: filteredHouses
+      });
     }
-  },
-
-  // 切换筛选类型
-  onTabChange(e) {
-    const activeTab = parseInt(e.currentTarget.dataset.value);
-    this.setData({
-      activeTab,
-      showFilter: true,
-      currentFilterType: ['area', 'sort', 'price', 'room'][activeTab]
-    });
-  },
-
-  // 阻止事件冒泡
-  preventBubble() {
-    return;
-  },
-
-  // 选择筛选选项
-  onFilterItemClick(e) {
-    const { type, value } = e.currentTarget.dataset;
-    const filterData = { ...this.data.filterData };
-    filterData[type] = value;
     
-    this.setData({
-      filterData,
-      showFilter: false
-    });
-    
-    this.applyFilters();
+    console.log('筛选条件已更新');
+    console.log('位置:', this.data.filters.selectedLocation);
+    console.log('户型:', this.data.filters.selectedRoom);
+    console.log('价格:', this.data.filters.selectedPrice);
+    console.log('排序:', this.data.filters.selectedSort);
+    console.log('搜索关键词:', this.data.searchValue);
   },
 
-  // 关闭筛选面板
-  closeFilter() {
-    this.setData({
-      showFilter: false
-    });
-  },
-  
-  // 根据搜索词获取并过滤房源
-  fetchAndFilterHouses(searchValue) {
-    this.setData({ loading: true, error: '' });
-    
-    api.getHouses()
-      .then(res => {
-        if (res.success && res.data) {
-          // 使用适配器处理数据
-          let adaptedHouses = adaptHouseList(res.data);
-          
-          // 本地搜索过滤
-          if (searchValue) {
-            adaptedHouses = adaptedHouses.filter(house => 
-              (house.title && house.title.includes(searchValue)) || 
-              (house.address && house.address.includes(searchValue))
-            );
-          }
-          
-          this.setData({ 
-            houses: adaptedHouses,
-            loading: false
-          });
-        } else {
-          this.setData({ 
-            error: '获取房源失败',
-            loading: false
-          });
-        }
-      })
-      .catch(err => {
-        console.error('获取房源出错：', err);
-        this.setData({ 
-          error: err.message || '网络错误，请稍后再试',
-          loading: false
-        });
-      });
-  },
-
-  // 应用所有筛选条件
-  applyFilters() {
-    this.setData({ loading: true, error: '' });
-    
-    api.getHouses()
-      .then(res => {
-        if (res.success && res.data) {
-          // 使用适配器处理数据
-          let adaptedHouses = adaptHouseList(res.data);
-          const { area, sort, price, room } = this.data.filterData;
-          
-          // 本地过滤 - 区域
-          if (area !== '全部区域') {
-            adaptedHouses = adaptedHouses.filter(house => 
-              house.area && house.area === area
-            );
-          }
-          
-          // 本地过滤 - 户型
-          if (room !== '全部户型') {
-            const roomNum = parseInt(room);
-            if (room === '4房及以上') {
-              adaptedHouses = adaptedHouses.filter(house => house.room && house.room >= 4);
-            } else {
-              adaptedHouses = adaptedHouses.filter(house => house.room && house.room === roomNum);
-            }
-          }
-          
-          // 本地过滤 - 价格
-          if (price !== '全部价格') {
-            if (price === '1000以下') {
-              adaptedHouses = adaptedHouses.filter(house => house.price && house.price < 1000);
-            } else if (price === '1000-2000') {
-              adaptedHouses = adaptedHouses.filter(house => house.price && house.price >= 1000 && house.price <= 2000);
-            } else if (price === '2000-3000') {
-              adaptedHouses = adaptedHouses.filter(house => house.price && house.price >= 2000 && house.price <= 3000);
-            } else if (price === '3000以上') {
-              adaptedHouses = adaptedHouses.filter(house => house.price && house.price > 3000);
-            }
-          }
-          
-          // 本地排序
-          if (sort === '价格从低到高') {
-            adaptedHouses.sort((a, b) => (a.price || 0) - (b.price || 0));
-          } else if (sort === '价格从高到低') {
-            adaptedHouses.sort((a, b) => (b.price || 0) - (a.price || 0));
-          } else if (sort === '面积从大到小') {
-            adaptedHouses.sort((a, b) => (b.area || 0) - (a.area || 0));
-          } else if (sort === '面积从小到大') {
-            adaptedHouses.sort((a, b) => (a.area || 0) - (b.area || 0));
-          }
-          
-          this.setData({ 
-            houses: adaptedHouses,
-            loading: false
-          });
-        } else {
-          this.setData({ 
-            error: '获取房源失败',
-            loading: false
-          });
-        }
-      })
-      .catch(err => {
-        console.error('获取房源出错：', err);
-        this.setData({ 
-          error: err.message || '网络错误，请稍后再试',
-          loading: false
-        });
-      });
-  },
-
-  onHouseClick(e) {
-    const { id } = e.currentTarget.dataset;
+  // 点击房源跳转到详情页
+  navigateToDetail: function(e) {
+    const { houseid } = e.currentTarget.dataset;
     wx.navigateTo({
-      url: `/pages/houseDetail/index?id=${id}`
+      url: `/pages/houseDetail/index?id=${houseid}`
     });
-  }
-}); 
+  },
+
+  // 获取Banner列表
+  fetchBannerList: function() {
+    wx.showLoading({
+      title: '加载中...',
+    });
+    
+    bannerService.getBannerList()
+      .then(banners => {
+        this.setData({
+          banners: banners
+        });
+        wx.hideLoading();
+      })
+      .catch(error => {
+        console.error('获取Banner失败:', error);
+        wx.hideLoading();
+        wx.showToast({
+          title: '获取轮播图失败',
+          icon: 'none'
+        });
+      });
+  },
+
+  // 获取区域列表
+  fetchAreaList: function() {
+    houseAreaService.getAreaList()
+      .then(areaList => {
+        // 只取区域名，首项为"全部位置"
+        const locations = ['全部位置', ...areaList.map(item => item.name)];
+        this.setData({
+          'filters.locations': locations,
+          'filters.selectedLocation': '全部位置'
+        });
+      })
+      .catch(error => {
+        wx.showToast({
+          title: '获取区域失败',
+          icon: 'none'
+        });
+      });
+  },
+
+  // 获取房源列表
+  fetchHouseList: function() {
+    wx.showLoading({ title: '加载中...' });
+    houseListService.getHouseList()
+      .then(houseList => {
+        this.setData({
+          houses: houseList,
+          filteredHouses: houseList
+        });
+        wx.hideLoading();
+      })
+      .catch(error => {
+        wx.hideLoading();
+        wx.showToast({
+          title: '获取房源失败',
+          icon: 'none'
+        });
+      });
+  },
+}) 

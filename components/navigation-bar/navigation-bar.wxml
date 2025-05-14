@@ -1,0 +1,19 @@
+<view class="navigation-bar" style="background: {{background}}; padding-top: {{statusBarHeight}}px; height: {{navHeight + extHeight}}px;">
+  <view class="navigation-bar__content" style="height: {{navHeight}}px;">
+    <!-- 返回按钮 -->
+    <view wx:if="{{back}}" class="navigation-bar__back" bindtap="navigateBack">
+      <view class="navigation-bar__back-icon"></view>
+    </view>
+
+    <!-- 标题 -->
+    <view class="navigation-bar__title" style="color: {{color}};">
+      {{title}}
+    </view>
+    
+    <!-- 自定义内容插槽 -->
+    <slot></slot>
+  </view>
+</view>
+
+<!-- 占位元素，防止内容被导航栏遮挡 -->
+<view style="height: {{statusBarHeight + navHeight + extHeight}}px;"></view>

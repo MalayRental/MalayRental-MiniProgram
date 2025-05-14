@@ -1,0 +1,66 @@
+<!-- 聊天页面 -->
+<navigation-bar title="{{contact.name}}" back="{{true}}" background="#4ac924" color="#fff" id="navbar"></navigation-bar>
+
+<!-- 计算导航栏高度，确保内容不被遮挡 -->
+<view wx:if="{{false}}" id="navbar-height"></view>
+
+<view class="chat-container" style="top: {{navBarHeight + 8}}px;">
+  <!-- 联系人信息栏 -->
+  <view class="contact-info">
+    <image class="contact-avatar" src="{{contact.avatar}}" mode="aspectFill"></image>
+    <view class="contact-details">
+      <view class="contact-name">{{contact.name}}</view>
+      <view class="contact-id">ID: {{contact.userId}}</view>
+    </view>
+    <view class="contact-status {{contact.online ? 'online' : 'offline'}}">
+      {{contact.online ? '在线' : '离线'}}
+    </view>
+  </view>
+
+  <!-- 消息列表区域 -->
+  <scroll-view 
+    class="message-list" 
+    scroll-y="{{true}}" 
+    scroll-into-view="{{scrollIntoView}}"
+    scroll-with-animation="{{true}}"
+    enhanced="{{true}}"
+    show-scrollbar="{{false}}"
+    style="{{messageListStyle}}"
+  >
+  <view class="message-list-content">
+    <block wx:for="{{messages}}" wx:key="id">
+      <view class="message-item {{item.isMine ? 'my-message' : 'other-message'}}" id="{{item.id}}">
+        <!-- 头像 -->
+        <image 
+          class="message-avatar {{item.isMine ? 'my-avatar' : 'other-avatar'}}" 
+          src="{{item.avatar}}" 
+          mode="aspectFill"
+        ></image>
+        
+        <!-- 消息内容 -->
+        <view class="message-bubble {{item.isMine ? 'my-bubble' : 'other-bubble'}}">
+          <text class="message-content">{{item.content}}</text>
+        </view>
+        
+        <!-- 消息时间 -->
+        <view class="message-time {{item.isMine ? 'my-time' : 'other-time'}}">{{item.time}}</view>
+      </view>
+    </block>
+    <!-- 底部留白已在CSS中设置，不需要额外元素 -->
+    </view>
+  </scroll-view>
+
+  <!-- 底部输入框 -->
+  <view class="input-container">
+    <input 
+      class="message-input" 
+      placeholder="请输入消息..." 
+      placeholder-class="input-placeholder"
+      value="{{inputValue}}"
+      bindinput="handleInputChange"
+      confirm-type="send"
+      bindconfirm="sendMessage"
+    ></input>
+    <view class="send-button" bindtap="sendMessage">发送</view>
+  </view>
+</view> 

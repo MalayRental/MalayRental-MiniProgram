@@ -1,0 +1,51 @@
+<!-- 消息页面 -->
+<navigation-bar title="消息" back="{{false}}" background="#4ac924" color="#fff"></navigation-bar>
+<view class="chat-list-container">
+  <!-- 搜索框 -->
+  <view class="search-container">
+    <view class="search-box">
+      <icon type="search" size="16" color="#999"></icon>
+      <input 
+        class="search-input" 
+        placeholder="搜索用户" 
+        placeholder-class="search-placeholder"
+        value="{{searchValue}}"
+        bindinput="handleSearchInput"
+        confirm-type="search"
+      ></input>
+      <view class="search-clear" bindtap="clearSearch" wx:if="{{searchValue}}">
+        <icon type="clear" size="16" color="#999"></icon>
+      </view>
+    </view>
+  </view>
+
+  <!-- 会话列表 -->
+  <scroll-view scroll-y="{{true}}" class="chat-list">
+    <block wx:if="{{filteredChatList.length > 0}}">
+      <block wx:for="{{filteredChatList}}" wx:key="id">
+        <view class="chat-item" bindtap="navigateToChat" data-chatid="{{item.id}}">
+          <!-- 头像 -->
+          <view class="avatar-container">
+            <image src="{{item.avatar}}" class="avatar" mode="aspectFill"></image>
+            <view class="unread-badge" wx:if="{{item.unread > 0}}">{{item.unread > 99 ? '99+' : item.unread}}</view>
+          </view>
+          
+          <!-- 信息 -->
+          <view class="chat-info">
+            <view class="info-top">
+              <text class="user-name">{{item.userName}}</text>
+              <text class="time">{{item.lastMessageTime}}</text>
+            </view>
+            <view class="info-bottom">
+              <text class="message">{{item.lastMessage}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </block>
+    <view class="empty-state" wx:else>
+      <image src="/assets/images/empty.png" class="empty-image"></image>
+      <text class="empty-text">暂无聊天记录</text>
+    </view>
+  </scroll-view>
+</view> 

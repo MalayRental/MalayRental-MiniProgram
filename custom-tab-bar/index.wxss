@@ -3,33 +3,50 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 110rpx;
-  background: white;
+  height: 120rpx;
+  background-color: #ffffff;
   display: flex;
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.tab-bar-border {
-  background-color: rgba(0, 0, 0, 0.1);
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 1rpx;
-  transform: scaleY(0.5);
+  align-items: center;
+  justify-content: space-around;
+  border-top: 1rpx solid #f6f6f6;
+  padding-bottom: calc(env(safe-area-inset-bottom) / 2);
 }
 
 .tab-bar-item {
   flex: 1;
-  text-align: center;
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
-  padding-top: 10rpx;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  padding: 16rpx 0 4rpx;
+}
+
+.tab-bar-item image {
+  width: 44rpx;
+  height: 44rpx;
+  position: relative;
+  z-index: 2;
 }
 
 .tab-bar-text {
   font-size: 24rpx;
-  margin-top: 6rpx;
+  line-height: 30rpx;
+  position: relative;
+  z-index: 2;
+  margin-top: 4rpx;
+}
+
+/* 选中状态背景 */
+.tab-bar-item.active::before {
+  content: '';
+  position: absolute;
+  top: 40rpx;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 76rpx;
+  height: 76rpx;
+  background-color: rgba(74, 201, 36, 0.1);
+  border-radius: 50%;
+  z-index: 1;
 } 

@@ -1,0 +1,68 @@
+<!-- 与我们合作页面 -->
+<navigation-bar title="与我们合作" back="{{true}}" background="#4ac924" color="#fff"></navigation-bar>
+<view class="page-container">
+  <view class="content">
+    <view class="header">
+      <image class="header-image" src="/assets/icons/cooperation.png" mode="aspectFit"></image>
+      <view class="header-title">成为我们的合作伙伴</view>
+      <view class="header-desc">共建马来西亚租房服务生态</view>
+    </view>
+    
+    <view class="section">
+      <view class="section-title">合作类型</view>
+      <view class="cooperation-item">
+        <image class="item-icon" src="/assets/icons/house.png" mode="aspectFit"></image>
+        <view class="item-content">
+          <view class="item-title">房产中介合作</view>
+          <view class="item-desc">诚邀马来西亚当地房产中介入驻平台，共享房源资源，拓展客户渠道</view>
+        </view>
+      </view>
+      
+      <view class="cooperation-item">
+        <image class="item-icon" src="/assets/icons/landlord.png" mode="aspectFit"></image>
+        <view class="item-content">
+          <view class="item-title">房东直接合作</view>
+          <view class="item-desc">房东可直接在平台上发布房源，高效对接租客</view>
+        </view>
+      </view>
+      
+      <view class="cooperation-item">
+        <image class="item-icon" src="/assets/icons/service.png" mode="aspectFit"></image>
+        <view class="item-content">
+          <view class="item-title">服务商合作</view>
+          <view class="item-desc">家政、搬家、维修等租房相关服务商，入驻平台拓展业务</view>
+        </view>
+      </view>
+      
+      <view class="cooperation-item">
+        <image class="item-icon" src="/assets/icons/ad.png" mode="aspectFit"></image>
+        <view class="item-content">
+          <view class="item-title">广告营销合作</view>
+          <view class="item-desc">提供平台广告位，精准触达马来西亚租房用户群体</view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="section">
+      <view class="section-title">联系方式</view>
+      <view class="contact-section">
+        <view class="contact-item">
+          <image class="contact-icon" src="/assets/icons/email.png" mode="aspectFit"></image>
+          <view class="contact-info">business@malayrental.com</view>
+        </view>
+        
+        <view class="contact-item">
+          <image class="contact-icon" src="/assets/icons/phone.png" mode="aspectFit"></image>
+          <view class="contact-info">+60 12-345 6789</view>
+        </view>
+        
+        <view class="contact-item">
+          <image class="contact-icon" src="/assets/icons/location.png" mode="aspectFit"></image>
+          <view class="contact-info">吉隆坡市中心, 马来西亚</view>
+        </view>
+      </view>
+    </view>
+    
+    <button class="contact-button" bindtap="contactUs">立即联系我们</button>
+  </view>
+</view> 

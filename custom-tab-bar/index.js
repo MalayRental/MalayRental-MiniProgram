@@ -5,20 +5,17 @@ Component({
       {
         pagePath: "/pages/home/index",
         text: "首页",
-        icon: "home",
-        selectedIcon: "home"
+        iconPath: "/assets/icons/home.png"
       },
       {
-        pagePath: "/pages/message/index",
+        pagePath: "/pages/chatList/index",
         text: "消息",
-        icon: "chat",
-        selectedIcon: "chat"
+        iconPath: "/assets/icons/message.png"
       },
       {
         pagePath: "/pages/mine/index",
         text: "我的",
-        icon: "user",
-        selectedIcon: "user"
+        iconPath: "/assets/icons/mine.png"
       }
     ]
   },
@@ -26,14 +23,9 @@ Component({
     switchTab(e) {
       const data = e.currentTarget.dataset;
       const url = data.path;
-      
       wx.switchTab({
         url
       });
-      
-      this.setData({
-        selected: data.index
-      }); 
     }
   }
-}); 
+}) 

@@ -1,275 +1,291 @@
-// pages/login/index.js
-const { request, api } = require('../../utils/request');
+// 登录页面逻辑
+const app = getApp();
+const userUtils = require('../../utils/userUtils');
+const { userAccountService } = require('../../api/service/index');
 
 Page({
   data: {
-    account: '',
-    password: '',
-    isLoading: false,
-    isWxLoading: false,
-    errorMessage: '',
-    navBarHeight: 0,
-    fromPage: '' // 记录来源页面
+    phoneNumber: '', // 手机号
+    password: '', // 密码
+    isAgree: true, // 是否同意协议
+    phoneNumberFocus: false, // 手机号输入框是否聚焦
+    passwordFocus: false // 密码输入框是否聚焦
   },
 
-  onLoad(options) {
-    // 如果有账号参数，填充到账号输入框（从注册页面返回）
-    if (options.account) {
-      this.setData({
-        account: options.account
-      });
-    }
-    
-    // 保存来源页面，用于登录成功后的跳转
-    if (options.from) {
-      this.setData({
-        fromPage: options.from
-      });
-    }
-  },
-
-  onShow() {
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({
-        selected: 2
-      });
-    }
-  },
-  
-  // 处理微信登录
-  wxLogin(e) {
-    // 新版微信小程序不再支持通过open-type="getUserInfo"获取用户信息
-    this.setData({ isWxLoading: true, errorMessage: '' });
-    
-    // 直接使用wx.login获取临时登录凭证code
-    wx.login({
-      success: res => {
-        if (res.code) {
-          console.log('获取微信登录code成功:', res.code);
-          
-          // 直接尝试自动注册/登录
-          api.autoRegisterWithWx(res.code)
-            .then(loginRes => {
-              this.setData({ isWxLoading: false });
-              
-              if (loginRes.success && loginRes.user) {
-                // 保存用户信息
-                wx.setStorageSync('userInfo', loginRes.user);
-                wx.setStorageSync('isLoggedIn', true);
-                
-                // 微信登录也显示成功提示
-                wx.showToast({
-                  title: '登录成功',
-                  icon: 'success',
-                  duration: 1500
-                });
-                
-                // 延迟导航，让用户看到提示
-                setTimeout(() => {
-                  this.handleLoginSuccess();
-                }, 1500);
-              } else {
-                this.showError(loginRes.message || '微信登录失败');
-              }
-            })
-            .catch(err => {
-              this.setData({ isWxLoading: false });
-              this.showError('微信登录失败，请稍后重试');
-              console.error('微信登录错误:', err);
-            });
-        } else {
-          this.setData({ isWxLoading: false });
-          this.showError('获取微信登录信息失败');
-          console.error('获取微信登录code失败:', res.errMsg);
-        }
-      },
-      fail: err => {
-        this.setData({ isWxLoading: false });
-        this.showError('微信登录授权失败');
-        console.error('wx.login调用失败:', err);
-      }
-    });
-  },
-
-  // 处理导航栏高度变化
-  onNavBarHeightChange(e) {
+  // 处理手机号输入
+  handlePhoneNumberInput: function(e) {
     this.setData({
-      navBarHeight: e.detail.height
+      phoneNumber: e.detail.value
     });
   },
 
-  // 输入账号
-  onAccountInput(e) {
-    const value = e.detail.value;
-    // 只允许输入数字
-    if (value && !/^\d*$/.test(value)) {
-      wx.showToast({
-        title: '请输入有效的手机号',
-        icon: 'none',
-        duration: 1500
-      });
-      return;
-    }
-    
-    this.setData({
-      account: value
-    });
-  },
-
-  // 输入密码
-  onPasswordInput(e) {
+  // 处理密码输入
+  handlePasswordInput: function(e) {
     this.setData({
       password: e.detail.value
     });
   },
 
-  // 验证手机号格式
-  validatePhoneNumber(phoneNumber) {
-    // 中国大陆手机号格式：1开头的11位数字
-    const phoneRegex = /^1[3-9]\d{9}$/;
-    return phoneRegex.test(phoneNumber);
-  },
-
-  // 处理登录成功后的跳转
-  handleLoginSuccess() {
-    const pages = getCurrentPages();
-    
-    // 判断跳转目标页面
-    if (this.data.fromPage === 'mine') {
-      // 如果是从"我的"页面来的，返回到"我的"页面
-      wx.switchTab({
-        url: '/pages/mine/index'
-      });
-    } else if (this.data.fromPage === 'chat') {
-      // 如果是从聊天页面来的，返回到聊天页面
-      wx.navigateBack();
-    } else if (pages.length > 1) {
-      // 如果有上一页，则返回上一页
-      wx.navigateBack();
-    } else {
-      // 默认跳转到"我的"页面
-      wx.switchTab({
-        url: '/pages/mine/index'
-      });
-    }
-  },
-
-  // 登录
-  login() {
-    const { account, password } = this.data;
-    
-    if (!account.trim()) {
-      this.showError('请输入手机号');
-      return;
-    }
-    
-    if (!this.validatePhoneNumber(account)) {
-      this.showError('请输入有效的手机号');
-      return;
-    }
-    
-    if (!password.trim()) {
-      this.showError('请输入密码');
-      return;
-    }
-    
-    this.normalLogin(account, password);
-  },
-  
-  // 普通账号密码登录
-  normalLogin(account, password) {
-    this.setData({ isLoading: true, errorMessage: '' });
-    
-    request('/users/login', 'POST', { account, password })
-      .then(res => {
-        this.setData({ isLoading: false });
-        
-        if (res.success) {
-          // 原样保存用户信息，不对头像进行处理
-          // 头像处理逻辑交给显示页面处理
-          wx.setStorageSync('userInfo', res.user);
-          wx.setStorageSync('isLoggedIn', true);
-          
-          // 显示成功提示
-          wx.showToast({
-            title: '登录成功',
-            icon: 'success',
-            duration: 1500
-          });
-          
-          // 登录成功后的跳转逻辑
-          setTimeout(() => {
-            this.handleLoginSuccess();
-          }, 1500);
-        } else {
-          // 显示服务器返回的错误信息
-          this.showError(res.message || '登录失败，请检查账号和密码');
-        }
-      })
-      .catch(err => {
-        this.setData({ isLoading: false });
-        
-        // 处理错误对象，提取服务器返回的错误信息
-        let errorMessage = '登录失败，请稍后重试';
-        
-        if (err) {
-          if (typeof err === 'string') {
-            errorMessage = err;
-          } else if (err.message) {
-            errorMessage = err.message;
-          } else if (err.statusCode) {
-            // 处理不同状态码错误
-            if (err.statusCode === 401) {
-              errorMessage = '账号或密码错误';
-            } else if (err.statusCode === 400) {
-              errorMessage = '请求参数错误，请检查输入';
-            }
-            
-            // 如果错误对象中包含详细信息，优先使用
-            if (err.data && err.data.message) {
-              errorMessage = err.data.message;
-            }
-          }
-        }
-        
-        this.showError(errorMessage);
-        console.error('登录错误：', err);
-      });
-  },
-  
-  // 去注册页面
-  goToRegister() {
-    wx.navigateTo({
-      url: '/pages/login/register'
+  // 处理手机号输入框聚焦
+  handlePhoneNumberFocus: function() {
+    this.setData({
+      phoneNumberFocus: true
     });
   },
-  
-  // 返回我的页面
-  goBack() {
-    // 判断是否可以返回上一页
-    const pages = getCurrentPages();
-    
-    if (pages.length > 1) {
-      // 有上一页，直接返回
-      wx.navigateBack();
-    } else {
-      // 没有上一页，默认跳转到"我的"页面
-      wx.switchTab({
-        url: '/pages/mine/index'
-      });
-    }
+
+  // 处理手机号输入框失焦
+  handlePhoneNumberBlur: function() {
+    this.setData({
+      phoneNumberFocus: false
+    });
   },
-  
-  // 显示错误消息
-  showError(message) {
-    this.setData({ errorMessage: message });
+
+  // 处理密码输入框聚焦
+  handlePasswordFocus: function() {
+    this.setData({
+      passwordFocus: true
+    });
+  },
+
+  // 处理密码输入框失焦
+  handlePasswordBlur: function() {
+    this.setData({
+      passwordFocus: false
+    });
+  },
+
+  // 处理协议勾选变化
+  handleAgreementChange: function(e) {
+    this.setData({
+      isAgree: e.detail.value.length > 0
+    });
+  },
+
+  // 处理登录按钮点击
+  handleLogin: function() {
+    const { phoneNumber, password, isAgree } = this.data;
     
-    wx.showToast({
-      title: message,
-      icon: 'none',
-      duration: 2500,
-      // 调大错误提示的字体
-      style: 'font-size: 28rpx; font-weight: 500;'
+    // 表单验证
+    if (!phoneNumber) {
+      wx.showToast({
+        title: '请输入手机号',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    if (!password) {
+      wx.showToast({
+        title: '请输入密码',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    if (!isAgree) {
+      wx.showToast({
+        title: '请先同意用户协议和隐私政策',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    // 显示加载中
+    wx.showLoading({
+      title: '登录中',
+      mask: true
+    });
+    
+    // 发起登录请求
+    userAccountService.login({
+      phoneNumber,
+      password
+    }).then(res => {
+      // 隐藏加载提示
+      wx.hideLoading();
+      
+      if (res.code === 200) {
+        // 保存登录信息
+        userUtils.saveLoginInfo(res.data);
+        
+        // 获取用户信息
+        const userInfo = userUtils.getUserInfo();
+        
+        // 处理用户头像URL
+        if (userInfo && userInfo.avatar) {
+          userInfo.avatar = userUtils.processAvatarUrl(userInfo.avatar);
+        }
+        
+        // 更新全局数据
+        userUtils.setLoggedIn(app, userInfo);
+        
+        // 提示登录成功
+        wx.showToast({
+          title: '登录成功',
+          icon: 'success',
+          duration: 1500,
+          mask: true,
+          success: () => {
+            // 延迟跳转到首页
+            setTimeout(() => {
+              wx.switchTab({
+                url: '/pages/home/index'
+              });
+            }, 1500);
+          }
+        });
+      } else {
+        // 登录失败提示
+        wx.showToast({
+          title: res.message || '登录失败，请重试',
+          icon: 'none'
+        });
+      }
+    }).catch(err => {
+      // 隐藏加载提示
+      wx.hideLoading();
+      
+      // 提示错误
+      wx.showToast({
+        title: err || '登录失败，请重试',
+        icon: 'none'
+      });
+    });
+  },
+
+  // 处理微信一键登录
+  handleWechatLogin: function() {
+    // 判断是否同意协议
+    if (!this.data.isAgree) {
+      wx.showToast({
+        title: '请先同意用户协议和隐私政策',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    // 显示加载中
+    wx.showLoading({
+      title: '微信登录中',
+      mask: true
+    });
+    
+    // 调用wx.login获取code
+    wx.login({
+      success: (res) => {
+        if (res.code) {
+          // 获取到微信的code，调用后端接口
+          userAccountService.wxLogin({
+            code: res.code
+          }).then(loginRes => {
+            wx.hideLoading();
+            
+            if (loginRes.code === 200) {
+              // 微信登录成功
+              // 保存登录信息
+              userUtils.saveLoginInfo(loginRes.data);
+              
+              // 获取用户信息
+              const userInfo = userUtils.getUserInfo();
+              
+              // 处理用户头像URL
+              if (userInfo && userInfo.avatar) {
+                userInfo.avatar = userUtils.processAvatarUrl(userInfo.avatar);
+              }
+              
+              // 更新全局数据
+              userUtils.setLoggedIn(app, userInfo);
+              
+              // 提示登录成功
+              wx.showToast({
+                title: '微信登录成功',
+                icon: 'success',
+                duration: 1500,
+                mask: true,
+                success: () => {
+                  // 延迟跳转到首页
+                  setTimeout(() => {
+                    wx.switchTab({
+                      url: '/pages/home/index'
+                    });
+                  }, 1500);
+                }
+              });
+            } else if (loginRes.code === 201) {
+              // 未绑定账号，需要进行注册
+              console.log('收到code 201响应，跳转到注册页面', loginRes);
+              
+              // 保存openId
+              if (loginRes.data && loginRes.data.openId) {
+                userUtils.saveOpenId(loginRes.data.openId);
+                
+                // 直接跳转到注册页面
+                wx.navigateTo({
+                  url: '/pages/wxRegister/index?openId=' + loginRes.data.openId
+                });
+              } else {
+                // openId不存在的情况
+                wx.showToast({
+                  title: '登录失败，未获取到微信信息',
+                  icon: 'none'
+                });
+              }
+            } else {
+              // 其他错误情况
+              wx.showToast({
+                title: loginRes.message || '微信登录失败',
+                icon: 'none'
+              });
+            }
+          }).catch(err => {
+            wx.hideLoading();
+            
+            // 处理错误
+            wx.showToast({
+              title: err.message || '微信登录失败，请重试',
+              icon: 'none'
+            });
+          });
+        } else {
+          wx.hideLoading();
+          
+          // 获取code失败
+          wx.showToast({
+            title: '微信登录失败: ' + (res.errMsg || '获取code失败'),
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        
+        // 登录失败
+        wx.showToast({
+          title: '微信登录失败: ' + (err.errMsg || '未知错误'),
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 跳转到注册页面
+  navigateToRegister: function() {
+    wx.navigateTo({
+      url: '/pages/register/index'
+    });
+  },
+
+  // 跳转到用户协议页面
+  navigateToUserAgreement: function() {
+    wx.navigateTo({
+      url: '/pages/policy/index?type=agreement'
+    });
+  },
+
+  // 跳转到隐私政策页面
+  navigateToPrivacyPolicy: function() {
+    wx.navigateTo({
+      url: '/pages/policy/index?type=privacy'
     });
   }
-}) 
+}); 

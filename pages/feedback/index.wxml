@@ -1,0 +1,55 @@
+<!-- 意见反馈页面 -->
+<navigation-bar title="意见反馈" back="{{true}}" background="#4ac924" color="#fff"></navigation-bar>
+<view class="page-container">
+  <view class="content">
+    <view class="header">
+      <image class="header-image" src="/assets/icons/feedback.png" mode="aspectFit"></image>
+      <view class="header-title">意见反馈</view>
+      <view class="header-desc">您的反馈是我们进步的动力</view>
+    </view>
+    
+    <view class="form-group">
+      <view class="form-label"><text class="required">*</text>反馈类型</view>
+      <view class="type-items">
+        <view class="type-item {{feedbackType === 'bug' ? 'active' : ''}}" bindtap="selectType" data-type="bug">功能异常</view>
+        <view class="type-item {{feedbackType === 'suggestion' ? 'active' : ''}}" bindtap="selectType" data-type="suggestion">功能建议</view>
+        <view class="type-item {{feedbackType === 'complaint' ? 'active' : ''}}" bindtap="selectType" data-type="complaint">投诉举报</view>
+        <view class="type-item {{feedbackType === 'other' ? 'active' : ''}}" bindtap="selectType" data-type="other">其他问题</view>
+      </view>
+    </view>
+    
+    <view class="form-group">
+      <view class="form-label"><text class="required">*</text>反馈内容</view>
+      <textarea class="form-textarea" placeholder="请详细描述您的问题或建议..." bindinput="inputFeedback" value="{{feedback}}"></textarea>
+    </view>
+    
+    <view class="form-group">
+      <view class="form-label">上传图片</view>
+      <view class="upload-desc">上传问题截图或相关图片（最多3张）</view>
+      <view class="image-uploader">
+        <view class="uploader-files">
+          <block wx:for="{{uploadedImages}}" wx:key="index">
+            <view class="uploader-file">
+              <image class="uploader-file-img" src="{{item}}" mode="aspectFill"></image>
+              <view class="uploader-file-delete" bindtap="deleteImage" data-index="{{index}}"></view>
+            </view>
+          </block>
+          <view class="uploader-add" bindtap="chooseImage" wx:if="{{uploadedImages.length < 3}}">
+            <view class="uploader-add-icon">+</view>
+            <view class="uploader-add-text">添加图片</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="form-group">
+      <view class="form-label">联系方式</view>
+      <view class="contact-info">
+        <input class="form-input" placeholder="请留下您的手机号或邮箱（选填）" bindinput="inputContact" value="{{contact}}"></input>
+        <view class="contact-tip">留下联系方式，便于我们及时回复您的反馈</view>
+      </view>
+    </view>
+    
+    <view class="submit-btn" bindtap="submitFeedback">提交反馈</view>
+  </view>
+</view> 

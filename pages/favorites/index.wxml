@@ -1,0 +1,43 @@
+<!-- 我的收藏页面 -->
+<navigation-bar title="我的收藏" back="{{true}}" background="#4ac924" color="#fff"></navigation-bar>
+<view class="page-container">
+  <!-- 加载中 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading"></view>
+    <view class="loading-text">正在加载...</view>
+  </view>
+  
+  <!-- 空状态 -->
+  <view class="empty-container" wx:elif="{{isEmpty}}">
+    <image class="empty-image" src="/assets/icons/empty-favorites.png" mode="aspectFit"></image>
+    <view class="empty-text">您还没有收藏任何房源</view>
+    <view class="empty-tip">浏览房源时点击心形图标即可收藏</view>
+    <navigator url="/pages/home/index" open-type="switchTab" class="action-button">去浏览房源</navigator>
+  </view>
+  
+  <!-- 收藏列表 -->
+  <view class="house-list" wx:else>
+    <view class="house-item" wx:for="{{favoriteList}}" wx:key="id" bindtap="goToDetail" data-id="{{item.id}}">
+      <!-- 房源封面 -->
+      <image src="{{item.imageUrl}}" class="house-cover" mode="aspectFill"></image>
+      
+      <!-- 房源信息 -->
+      <view class="house-info">
+        <!-- 名称 -->
+        <view class="house-name">{{item.title}}</view>
+        
+        <!-- 区域 -->
+        <view class="house-area">{{item.address}}</view>
+        
+        <!-- 详细信息：户型、面积 -->
+        <view class="house-details">
+          <text class="house-orientation">{{item.roomType}}</text>
+          <text class="house-proportion">{{item.area}}{{item.areaUnit}}</text>
+        </view>
+        
+        <!-- 价格 -->
+        <view class="house-price">{{item.price}} {{item.priceUnit}}</view>
+      </view>
+    </view>
+  </view>
+</view> 

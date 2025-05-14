@@ -1,0 +1,147 @@
+/* 微信注册页面样式 */
+.register-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #4ac924 0%, #f2faf2 30%, #f6f6f6 100%);
+  padding: 0 30rpx;
+  box-sizing: border-box;
+}
+
+/* 顶部标题 */
+.register-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 60rpx 0;
+}
+
+.title-text {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.subtitle-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 注册表单 */
+.register-form {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  margin-bottom: 40rpx;
+}
+
+/* 输入项 */
+.input-item {
+  margin-bottom: 40rpx;
+}
+
+.input-label {
+  font-size: 28rpx;
+  color: #333333;
+  margin-bottom: 16rpx;
+  font-weight: 500;
+}
+
+.input-content {
+  display: flex;
+  height: 90rpx;
+  border-bottom: 1rpx solid #e0e0e0;
+  position: relative;
+  overflow: hidden;
+}
+
+.input-content::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2rpx;
+  background-color: #4ac924;
+  transition: width 0.3s ease;
+}
+
+.input-content.focus::after {
+  width: 100%;
+}
+
+.form-input {
+  flex: 1;
+  height: 100%;
+  font-size: 28rpx;
+}
+
+.input-placeholder {
+  color: #999999;
+}
+
+/* 注册按钮 */
+.register-button {
+  margin-top: 60rpx;
+  height: 90rpx;
+  line-height: 90rpx;
+  background: linear-gradient(90deg, #4ac924 0%, #3db91f 100%);
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 500;
+  border-radius: 45rpx;
+  box-shadow: 0 6rpx 12rpx rgba(74, 201, 36, 0.2);
+  border: none;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-hover {
+  opacity: 0.8;
+  transform: translateY(2rpx);
+  box-shadow: 0 4rpx 8rpx rgba(74, 201, 36, 0.2);
+}
+
+/* 底部链接 */
+.bottom-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.link {
+  color: #4ac924;
+  margin-left: 8rpx;
+}
+
+/* 底部协议 */
+.agreement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40rpx;
+  font-size: 24rpx;
+  color: #999999;
+  padding: 20rpx;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 10rpx;
+  width: fit-content;
+  align-self: center;
+}
+
+.agreement-text {
+  margin-left: 10rpx;
+}
+
+.link-text {
+  color: #4ac924;
+} 

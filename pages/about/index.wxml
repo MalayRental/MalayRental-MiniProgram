@@ -1,70 +1,70 @@
-<view class="about-container">
-  <!-- 自定义导航栏 -->
-  <custom-navbar title="关于大马租房" showBack="{{true}}" solidGradient="{{true}}" bind:heightChange="onNavBarHeightChange"></custom-navbar>
-  
-  <!-- LOGO和标题 -->
-  <view class="logo-section">
-    <image src="/images/logo.png" mode="aspectFit" class="logo-image"></image>
-    <view class="app-title">大马租房</view>
-    <view class="app-slogan">马来西亚华人专属租房平台</view>
-    <view class="app-version">{{appInfo.version}}</view>
-  </view>
-  
-  <!-- 应用信息 -->
-  <view class="info-card">
-    <view class="card-title">应用信息</view>
-    <view class="info-item">
-      <text class="info-label">发布日期：</text>
-      <text class="info-value">{{appInfo.releaseDate}}</text>
+<!-- 关于马来租房页面 -->
+<navigation-bar title="关于马来租房" back="{{true}}" background="#4ac924" color="#fff"></navigation-bar>
+<view class="page-container">
+  <view class="content">
+    <view class="header">
+      <image class="app-logo" src="/assets/app-logo.png" mode="aspectFill"></image>
+      <view class="app-name">马来租房</view>
+      <view class="app-version">版本 1.0.0</view>
+      <view class="app-slogan">让您在马来西亚租房更简单、更安心</view>
     </view>
-    <view class="info-item">
-      <text class="info-label">开发团队：</text>
-      <text class="info-value">{{appInfo.developer}}</text>
-    </view>
-    <view class="info-item" bindtap="copyContact">
-      <text class="info-label">联系邮箱：</text>
-      <text class="info-value contact-value">{{appInfo.contact}}</text>
-      <t-icon name="copy" size="32rpx" color="#0052D9" />
-    </view>
-    <view class="info-item">
-      <text class="info-label">官方网站：</text>
-      <text class="info-value">{{appInfo.website}}</text>
-    </view>
-  </view>
-  
-  <!-- 平台介绍 -->
-  <view class="intro-card">
-    <view class="card-title">平台介绍</view>
-    <view class="intro-text">
-      大马租房是专为马来西亚华人留学生、工作人士以及当地居民打造的房屋租赁平台。我们致力于为用户提供真实、安全、便捷的租房体验，解决海外生活的住房需求。
-    </view>
-    <view class="intro-text">
-      我们的平台特色：
-      <view class="feature-item">· 真实可靠的房源信息</view>
-      <view class="feature-item">· 专业的客服团队</view>
-      <view class="feature-item">· 完善的租房保障</view>
-      <view class="feature-item">· 便捷的在线预约看房</view>
-    </view>
-  </view>
-  
-  <!-- 常见问题 -->
-  <view class="faq-card">
-    <view class="card-title">常见问题</view>
-    <view class="faq-list">
-      <view class="faq-item" wx:for="{{faqList}}" wx:key="question">
-        <view class="faq-question">
-          <t-icon name="help-circle" size="36rpx" color="#0052D9" />
-          <text>{{item.question}}</text>
-        </view>
-        <view class="faq-answer">{{item.answer}}</view>
+    
+    <view class="about-section">
+      <view class="section-title">应用介绍</view>
+      <view class="section-content">
+        马来租房是一款专为在马来西亚学习、工作和生活的中国人设计的租房服务小程序。我们致力于解决海外租房中遇到的语言障碍、信息不对称和安全风险等问题，为用户提供全中文的租房服务平台。
       </view>
     </view>
-  </view>
-  
-  <!-- 合作入口 -->
-  <view class="cooperation-card" bindtap="goToCooperation">
-    <view class="cooperation-title">与我们合作</view>
-    <view class="cooperation-desc">成为房东或合作伙伴，共同发展</view>
-    <t-icon name="chevron-right" size="40rpx" color="#0052D9" />
+    
+    <view class="divider"></view>
+    
+    <view class="about-section">
+      <view class="section-title">主要功能</view>
+      <view class="feature-list">
+        <view class="feature-item">
+          <image class="feature-icon" src="/assets/icons/search.png" mode="aspectFit"></image>
+          <view class="feature-text">全中文房源搜索与筛选，支持区域、价格、户型等多维度筛选</view>
+        </view>
+        <view class="feature-item">
+          <image class="feature-icon" src="/assets/icons/chat-black.png" mode="aspectFit"></image>
+          <view class="feature-text">与中国员工直接沟通，免除语言障碍</view>
+        </view>
+        <view class="feature-item">
+          <image class="feature-icon" src="/assets/icons/map.png" mode="aspectFit"></image>
+          <view class="feature-text">地图找房功能，直观了解房源位置与周边环境</view>
+        </view>
+        <view class="feature-item">
+          <image class="feature-icon" src="/assets/icons/verify.png" mode="aspectFit"></image>
+          <view class="feature-text">房源真实性验证，杜绝虚假信息</view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="divider"></view>
+    
+    <view class="about-section">
+      <view class="section-title">关于我们</view>
+      <view class="section-content">
+        马来租房团队由一群在马来西亚留学和工作的中国留学生创立，深入了解海外生活中的租房痛点。我们希望通过科技手段，为在马华人提供更便捷、更安全的租房体验。
+      </view>
+    </view>
+    
+    <view class="divider"></view>
+    
+    <view class="about-section">
+      <view class="section-title">联系方式</view>
+      <view class="contact-item">
+        <image class="contact-icon" src="/assets/icons/email.png" mode="aspectFit"></image>
+        <view class="contact-text">service@malayrental.com</view>
+      </view>
+      <view class="contact-item">
+        <image class="contact-icon" src="/assets/icons/wechat.png" mode="aspectFit"></image>
+        <view class="contact-text">MalayRental</view>
+      </view>
+      <view class="contact-item">
+        <image class="contact-icon" src="/assets/icons/website.png" mode="aspectFit"></image>
+        <view class="contact-text">www.malayrental.com</view>
+      </view>
+    </view>
   </view>
 </view> 
