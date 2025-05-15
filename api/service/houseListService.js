@@ -1,13 +1,6 @@
-// houseListService.js
-// 房源列表服务
-
 const { post } = require('../request');
 const { BASE_URL } = require('../api');
 
-/**
- * 获取房源列表
- * @returns {Promise} 返回房源列表Promise
- */
 const getHouseList = () => {
   const requestData = {
     message: "获取房源列表",

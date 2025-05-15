@@ -27,6 +27,13 @@ const API = {
   CHAT: {
     GET_CHAT_LIST: '/api/chat/getChatList',
   },
+  // 收藏相关
+  FAVORITE: {
+    GET_FAVORITE_LIST: '/api/favorite/getFavoriteList',
+    ADD_FAVORITE_ITEM: '/api/favorite/addFavoriteItem',
+    REMOVE_FAVORITE_ITEM: '/api/favorite/removeFavoriteItem',
+    CHECK_FAVORITE_STATUS: '/api/favorite/checkFavoriteStatus',
+  },
 };
 
 module.exports = {

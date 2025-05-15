@@ -1,14 +1,6 @@
-// houseDetailService.js
-// 房源详情服务
-
 const { post } = require('../request');
 const { BASE_URL } = require('../api');
 
-/**
- * 获取房源详情
- * @param {string} houseId 房源ID
- * @returns {Promise} 返回房源详情Promise
- */
 const getHouseDetail = (houseId) => {
   const requestData = {
     message: "获取房源信息列表",

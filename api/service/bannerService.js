@@ -1,13 +1,6 @@
-// bannerService.js
-// Banner服务，获取轮播图数据
-
 const { post } = require('../request');
 const { API, BASE_URL } = require('../api');
 
-/**
- * 获取Banner图列表
- * @returns {Promise} 返回Banner图列表Promise
- */
 const getBannerList = () => {
   // 构建请求体
   const requestData = {
@@ -43,11 +36,6 @@ const getBannerList = () => {
     });
 };
 
-/**
- * 格式化图片URL，如果不是完整URL则拼接基础图片服务器地址
- * @param {String} imageUrl - 图片路径
- * @returns {String} 完整的图片URL
- */
 const formatImageUrl = (imageUrl) => {
   // 如果是完整URL（以http或https开头），则直接返回
   if (imageUrl && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {

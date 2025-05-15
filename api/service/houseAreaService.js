@@ -1,13 +1,6 @@
-// houseAreaService.js
-// 区域（位置）服务，获取区域列表
-
 const { post } = require('../request');
 const { API } = require('../api');
 
-/**
- * 获取区域（位置）列表
- * @returns {Promise} 返回区域列表Promise
- */
 const getAreaList = () => {
   const requestData = {
     message: "获取区域列表", // 按接口要求

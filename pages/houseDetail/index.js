@@ -1,5 +1,7 @@
 const app = getApp()
 const { houseDetailService } = require('../../api/service/index');
+const { isLoggedIn, navigateToLogin, getUserInfo } = require('../../utils/userUtils');
+const { addFavoriteItem, removeFavoriteItem, checkFavoriteStatus } = require('../../api/service/favoriteService');
 
 Page({
   data: {
@@ -52,8 +54,18 @@ Page({
         };
         this.setData({
           house,
-          isCollected: detail.favoriteStatus
+          houseId: houseId
         });
+        // 检查收藏状态
+        const userInfo = getUserInfo();
+        if (userInfo && userInfo.userId) {
+          checkFavoriteStatus(userInfo.userId, houseId)
+            .then(isCollected => {
+              this.setData({ isCollected });
+            });
+        } else {
+          this.setData({ isCollected: false });
+        }
         wx.hideLoading();
       })
       .catch(error => {
@@ -67,19 +79,43 @@ Page({
 
   // 切换收藏状态
   toggleCollect: function() {
-    this.setData({
-      isCollected: !this.data.isCollected
-    });
-    // 这里应该请求后端API更新收藏状态
-    wx.showToast({
-      title: this.data.isCollected ? '已收藏' : '已取消收藏',
-      icon: 'success',
-      duration: 1500
-    });
+    if (!isLoggedIn()) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      setTimeout(() => { navigateToLogin(); }, 800);
+      return;
+    }
+    const userInfo = getUserInfo();
+    if (!userInfo || !userInfo.userId) {
+      wx.showToast({ title: '用户信息异常', icon: 'none' });
+      return;
+    }
+    const houseId = this.data.houseId;
+    const isCollected = this.data.isCollected;
+    wx.showLoading({ title: isCollected ? '取消中...' : '收藏中...' });
+    const action = isCollected ? removeFavoriteItem : addFavoriteItem;
+    action(userInfo.userId, houseId)
+      .then(() => {
+        this.setData({ isCollected: !isCollected });
+        wx.hideLoading();
+        wx.showToast({
+          title: !isCollected ? '已收藏' : '已取消收藏',
+          icon: 'success',
+          duration: 1500
+        });
+      })
+      .catch(err => {
+        wx.hideLoading();
+        wx.showToast({ title: (isCollected ? '取消收藏失败' : '收藏失败'), icon: 'none' });
+      });
   },
 
   // 在线聊天
   onlineChat: function() {
+    if (!isLoggedIn()) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      setTimeout(() => { navigateToLogin(); }, 800);
+      return;
+    }
     const ownerId = this.data.house.owner && this.data.house.owner.id;
     if (ownerId) {
       wx.navigateTo({ url: `/pages/chatOnline/index?id=${ownerId}` });
@@ -90,6 +126,11 @@ Page({
 
   // 电话联系
   phoneCall: function() {
+    if (!isLoggedIn()) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      setTimeout(() => { navigateToLogin(); }, 800);
+      return;
+    }
     const phone = this.data.house.owner && this.data.house.owner.phone;
     if (phone) {
       wx.makePhoneCall({ phoneNumber: phone });

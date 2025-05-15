@@ -31,7 +31,7 @@
         
         <!-- 详细信息：户型、面积 -->
         <view class="house-details">
-          <text class="house-orientation">{{item.roomType}}</text>
+          <text class="house-orientation">{{item.orientation}}</text>
           <text class="house-proportion">{{item.area}}{{item.areaUnit}}</text>
         </view>
         
