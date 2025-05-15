@@ -109,6 +109,7 @@ Page({
             (item.lastMessage ? item.lastMessage : '暂无消息'),
           lastMessageTime: formatChatTime(item.lastMessageTime),
           staffId: item.staffId,
+          staffStatus: item.staffStatus,
           lastMessageType: item.lastMessageType
         }));
         this.setData({
@@ -158,8 +159,15 @@ Page({
   // 跳转到聊天页面
   navigateToChat: function(e) {
     const { chatid } = e.currentTarget.dataset;
-    wx.navigateTo({
-      url: `/pages/chatOnline/index?id=${chatid}`
-    });
+    const chatItem = this.data.filteredChatList.find(item => item.id === chatid);
+    if (chatItem) {
+      wx.navigateTo({
+        url: `/pages/chatOnline/index?id=${chatid}` +
+          `&staffAvatar=${encodeURIComponent(chatItem.avatar)}` +
+          `&staffStatus=${chatItem.staffStatus}` +
+          `&staffName=${encodeURIComponent(chatItem.userName)}` +
+          `&staffId=${chatItem.staffId}`
+      });
+    }
   }
 }) 

@@ -36,14 +36,13 @@
           src="{{item.avatar}}" 
           mode="aspectFill"
         ></image>
-        
-        <!-- 消息内容 -->
-        <view class="message-bubble {{item.isMine ? 'my-bubble' : 'other-bubble'}}">
-          <text class="message-content">{{item.content}}</text>
+        <!-- 气泡和时间包裹 -->
+        <view class="bubble-time-wrap {{item.isMine ? 'my-bubble-time' : 'other-bubble-time'}}">
+          <view class="message-bubble {{item.isMine ? 'my-bubble' : 'other-bubble'}}">
+            <text class="message-content">{{item.content}}</text>
+          </view>
+          <view class="message-time {{item.isMine ? 'my-time' : 'other-time'}}">{{item.time}}</view>
         </view>
-        
-        <!-- 消息时间 -->
-        <view class="message-time {{item.isMine ? 'my-time' : 'other-time'}}">{{item.time}}</view>
       </view>
     </block>
     <!-- 底部留白已在CSS中设置，不需要额外元素 -->

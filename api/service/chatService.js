@@ -8,7 +8,7 @@ const request = require('../request');
  */
 const getChatList = (runUser) => {
   const data = {
-    message: '获取消息列表',
+    message: '获取会话列表',
     timestamp: Date.now(),
     data: {
       runUser
@@ -17,6 +17,16 @@ const getChatList = (runUser) => {
   return request.post(API.CHAT.GET_CHAT_LIST, data);
 };
 
+const getAllMessages = (runUser, chatId) => {
+  const data = {
+    message: '获取消息内容列表',
+    timestamp: Date.now(),
+    data: { runUser, chatId }
+  };
+  return request.post('/api/chat/getAllMessages', data);
+};
+
 module.exports = {
-  getChatList
+  getChatList,
+  getAllMessages
 }; 

@@ -87,6 +87,7 @@
 /* 消息项目 */
 .message-item {
   display: flex;
+  align-items: flex-end;
   margin-bottom: 40rpx;
   position: relative;
   max-width: 100%;
@@ -112,8 +113,23 @@
   margin-right: 20rpx;
 }
 
-.message-bubble {
+.bubble-time-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   max-width: 60%;
+}
+
+.my-bubble-time {
+  align-items: flex-end;
+}
+
+.other-bubble-time {
+  align-items: flex-start;
+}
+
+.message-bubble {
+  max-width: 100%;
   padding: 20rpx 24rpx;
   border-radius: 12rpx;
   word-wrap: break-word;
@@ -141,18 +157,21 @@
 .message-time {
   font-size: 22rpx;
   color: #999;
-  position: absolute;
-  bottom: -34rpx;
-  width: 100rpx;
+  margin-top: 8rpx;
+  width: auto;
+  text-align: left;
+  position: static;
+  align-self: flex-start;
 }
 
 .my-time {
-  right: 100rpx;
   text-align: right;
+  align-self: flex-end;
 }
 
 .other-time {
-  left: 100rpx;
+  text-align: left;
+  align-self: flex-start;
 }
 
 /* 底部输入框 */

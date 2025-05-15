@@ -1,4 +1,6 @@
 const app = getApp()
+const { chatService } = require('../../api/service/index');
+const userUtils = require('../../utils/userUtils');
 
 Page({
   data: {
@@ -6,78 +8,96 @@ Page({
     inputValue: '', // 输入框的值
     scrollIntoView: '', // 滚动定位的消息ID
     contact: {
-      id: 101,
-      avatar: '/assets/images/avatar1.jpg',
-      name: '李房东',
-      userId: 'LD123456',
-      online: true
+      avatar: '',
+      name: '',
+      userId: '',
+      online: false
     },
     navBarHeight: 0, // 导航栏高度
     messageListStyle: '', // 消息列表样式
-    // 聊天消息列表
-    messages: [
-      {
-        id: 'm1',
-        content: '您好，请问这套房子还可以出租吗？',
-        time: '10:00',
-        isMine: false,
-        avatar: '/assets/images/avatar1.jpg'
-      },
-      {
-        id: 'm2',
-        content: '您好，这套房子目前可以出租，您有兴趣看房吗？',
-        time: '10:02',
-        isMine: true,
-        avatar: '/assets/images/user-avatar.jpg'
-      },
-      {
-        id: 'm3',
-        content: '有的，请问什么时候方便看房？',
-        time: '10:05',
-        isMine: false,
-        avatar: '/assets/images/avatar1.jpg'
-      },
-      {
-        id: 'm4',
-        content: '我这周末都有时间，您看周六上午怎么样？',
-        time: '10:10',
-        isMine: true,
-        avatar: '/assets/images/user-avatar.jpg'
-      },
-      {
-        id: 'm5',
-        content: '周六上午可以，具体地址在哪里？',
-        time: '10:15',
-        isMine: false,
-        avatar: '/assets/images/avatar1.jpg'
-      }
-    ]
+    messages: []
   },
 
   onLoad: function(options) {
-    // 获取路由参数中的联系人ID
-    const { id } = options;
-    if (id) {
-      this.setData({
-        userId: id
-      });
-      
-      // 这里应该根据ID请求后端获取聊天记录和联系人信息
-      // 示例中使用静态数据
-    }
-    
-    // 获取导航栏高度
+    const { id, staffAvatar, staffStatus, staffName, staffId } = options;
+    const contact = {
+      avatar: userUtils.processAvatarUrl(decodeURIComponent(staffAvatar || '')),
+      name: decodeURIComponent(staffName || ''),
+      userId: staffId || '',
+      online: staffStatus === 'online'
+    };
+    this.setData({
+      userId: id,
+      contact
+    });
+    // 获取消息列表
+    this.fetchMessages();
     this.getNavBarHeight();
-    
-    // 滚动到最新消息
     this.scrollToBottom();
   },
 
+  fetchMessages: function() {
+    const userInfo = wx.getStorageSync('userInfo');
+    if (!userInfo || !userInfo.userId || !this.data.userId) {
+      this.setData({ messages: [] });
+      return;
+    }
+    chatService.getAllMessages(userInfo.userId, this.data.userId).then(res => {
+      if (res.code === 200 && Array.isArray(res.data)) {
+        const messages = res.data.map(item => ({
+          id: item.messageId,
+          content: item.messageType === 'Image' ? '[图片消息]' :
+                   item.messageType === 'Card' ? '[卡片消息]' :
+                   (item.content || ''),
+          time: this.formatChatTime(item.createTime),
+          isMine: item.senderId === userInfo.userId,
+          avatar: item.senderId === userInfo.userId
+            ? userUtils.processAvatarUrl(userInfo.avatar)
+            : this.data.contact.avatar
+        }));
+        this.setData({ messages }, () => this.scrollToBottom());
+      } else {
+        this.setData({ messages: [] });
+      }
+    }).catch(() => {
+      this.setData({ messages: [] });
+    });
+  },
+
+  // 聊天时间格式化
+  formatChatTime: function(timeStr) {
+    if (!timeStr) return '';
+    const now = new Date();
+    const date = new Date(timeStr.replace(/-/g, '/'));
+    const nowY = now.getFullYear();
+    const nowM = now.getMonth();
+    const nowD = now.getDate();
+    const dateY = date.getFullYear();
+    const dateM = date.getMonth();
+    const dateD = date.getDate();
+    const pad = n => n < 10 ? '0' + n : n;
+    const hm = pad(date.getHours()) + ':' + pad(date.getMinutes());
+    if (nowY === dateY && nowM === dateM && nowD === dateD) {
+      return `今天 ${hm}`;
+    }
+    const yesterday = new Date(now);
+    yesterday.setDate(nowD - 1);
+    if (dateY === yesterday.getFullYear() && dateM === yesterday.getMonth() && dateD === yesterday.getDate()) {
+      return `昨天 ${hm}`;
+    }
+    const beforeYesterday = new Date(now);
+    beforeYesterday.setDate(nowD - 2);
+    if (dateY === beforeYesterday.getFullYear() && dateM === beforeYesterday.getMonth() && dateD === beforeYesterday.getDate()) {
+      return `前天 ${hm}`;
+    }
+    if (nowY === dateY) {
+      return `${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${hm}`;
+    }
+    return `${dateY}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${hm}`;
+  },
+
   onReady: function() {
-    // 滚动到最新消息
     this.scrollToBottom();
-    
-    // 调整消息列表高度
     this.adjustMessageListHeight();
   },
   
@@ -142,40 +162,6 @@ Page({
       inputValue: ''
     }, () => {
       // 发送消息后滚动到底部
-      this.scrollToBottom();
-      
-      // 模拟对方回复
-      setTimeout(() => {
-        this.receiveMessage();
-      }, 1000);
-    });
-  },
-
-  // 模拟接收消息
-  receiveMessage: function() {
-    const replyMessages = [
-      '好的，我明白了',
-      '没问题，到时见',
-      '请问还有其他问题吗？',
-      '这套房子的位置很好，周边设施齐全',
-      '可以，我会安排的'
-    ];
-    
-    const randomIndex = Math.floor(Math.random() * replyMessages.length);
-    const newMessage = {
-      id: 'm' + (this.data.messages.length + 1),
-      content: replyMessages[randomIndex],
-      time: this.getCurrentTime(),
-      isMine: false,
-      avatar: '/assets/images/avatar1.jpg'
-    };
-    
-    const messages = [...this.data.messages, newMessage];
-    
-    this.setData({
-      messages
-    }, () => {
-      // 接收消息后滚动到底部
       this.scrollToBottom();
     });
   },
