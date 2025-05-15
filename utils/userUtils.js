@@ -155,6 +155,11 @@ const processAvatarUrl = (avatar) => {
  * @param {Object} app 应用实例
  */
 const checkLoginStatus = (app) => {
+  // 检查本地是否有 loginStatus
+  let loginStatus = wx.getStorageSync(STORAGE_KEYS.LOGIN_STATUS);
+  if (!loginStatus) {
+    wx.setStorageSync(STORAGE_KEYS.LOGIN_STATUS, LOGIN_STATUS.NOT_LOGGED_IN);
+  }
   // 获取用户Token和手机号
   const userToken = getUserToken();
   const phoneNumber = getPhoneNumber();
