@@ -27,6 +27,16 @@ Page({
     wx.showLoading({ title: '加载中...' });
     houseDetailService.getHouseDetail(houseId)
       .then(detail => {
+        // 处理图片，coverImage放首位
+        let images = [];
+        if (detail.coverImage) {
+          images.push(detail.coverImage);
+        }
+        if (detail.detailImages && Array.isArray(detail.detailImages)) {
+          images = images.concat(detail.detailImages);
+        } else if (detail.detailImages && typeof detail.detailImages === 'string') {
+          images = images.concat(detail.detailImages.split(','));
+        }
         // 格式化页面所需字段
         const house = {
           id: detail.houseId,
@@ -45,7 +55,7 @@ Page({
           uploadTime: detail.createTime,
           lastUpdate: detail.updateTime,
           tags: detail.tags ? detail.tags.split(',') : [],
-          images: detail.detailImages || [],
+          images: images,
           owner: {
             id: detail.ownerId,
             name: detail.ownerName,

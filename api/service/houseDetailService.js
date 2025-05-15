@@ -27,6 +27,8 @@ const getHouseDetail = (houseId) => {
         if (data.detailImages) {
           detailImages = data.detailImages.split(',').map(img => formatImageUrl(img));
         }
+        // 处理封面
+        const coverImage = data.coverImage ? formatCoverImageUrl(data.coverImage) : '';
         // 收藏状态兼容处理
         const favoriteStatus = typeof data.favoriteStatus === 'boolean' ? data.favoriteStatus : false;
         // 处理头像url
@@ -34,6 +36,7 @@ const getHouseDetail = (houseId) => {
         return {
           ...data,
           detailImages,
+          coverImage,
           favoriteStatus,
           ownerAvatar
         };
@@ -60,6 +63,13 @@ function formatAvatarUrl(avatar) {
     return avatar;
   }
   return `${BASE_URL}/api/images/avatar/${avatar}`;
+}
+
+function formatCoverImageUrl(image) {
+  if (image && (image.startsWith('http://') || image.startsWith('https://'))) {
+    return image;
+  }
+  return `${BASE_URL}/api/images/houseCover/${image}`;
 }
 
 module.exports = {
