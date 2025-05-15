@@ -36,7 +36,7 @@ Page({
         icon: '/assets/icons/feedback.png', 
         text: '意见反馈', 
         url: '/pages/feedback/index',
-        needLogin: false
+        needLogin: true
       },
       { 
         id: 5, 
@@ -122,7 +122,7 @@ Page({
     const { url, needlogin } = e.currentTarget.dataset;
     
     // 检查是否需要登录
-    if (needlogin === 'true' && !this.data.isLoggedIn) {
+    if (needlogin && !this.data.isLoggedIn) {
       this.navigateToLogin();
       return;
     }

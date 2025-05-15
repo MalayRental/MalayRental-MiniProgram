@@ -1,3 +1,5 @@
+const userUtils = require('../utils/userUtils');
+
 Component({
   data: {
     selected: 0,
@@ -23,6 +25,13 @@ Component({
     switchTab(e) {
       const data = e.currentTarget.dataset;
       const url = data.path;
+      // 登录校验
+      if ((url === '/pages/chatList/index') && !userUtils.isLoggedIn()) {
+        wx.navigateTo({
+          url: '/pages/login/index'
+        });
+        return;
+      }
       wx.switchTab({
         url
       });
