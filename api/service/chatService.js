@@ -26,7 +26,17 @@ const getAllMessages = (runUser, chatId) => {
   return request.post('/api/chat/getAllMessages', data);
 };
 
+const readChatMessages = (runUser, chatId) => {
+  const data = {
+    message: '已读所有消息',
+    timestamp: Date.now(),
+    data: { runUser, chatId }
+  };
+  return request.post('/api/chat/readChatMessages', data);
+};
+
 module.exports = {
   getChatList,
-  getAllMessages
+  getAllMessages,
+  readChatMessages
 }; 

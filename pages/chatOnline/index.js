@@ -30,6 +30,11 @@ Page({
       userId: id,
       contact
     });
+    // 已读所有消息
+    const userInfo = wx.getStorageSync('userInfo');
+    if (userInfo && userInfo.userId && id) {
+      chatService.readChatMessages(userInfo.userId, id);
+    }
     // 获取消息列表
     this.fetchMessages();
     this.getNavBarHeight();
