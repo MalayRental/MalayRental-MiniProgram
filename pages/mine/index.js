@@ -55,8 +55,8 @@ Page({
     ],
     // 收藏和历史
     collections: [
-      { id: 1, text: '我的收藏', icon: '/assets/icons/star.png', count: 0 },
-      { id: 2, text: '浏览历史', icon: '/assets/icons/history.png', count: 0 }
+      { id: 1, text: '我的收藏', icon: '/assets/icons/star.png'},
+      { id: 2, text: '浏览历史', icon: '/assets/icons/history.png'}
     ]
   },
 

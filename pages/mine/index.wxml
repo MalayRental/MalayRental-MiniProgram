@@ -36,7 +36,6 @@
           <image class="collection-icon" src="{{item.icon}}" mode="aspectFit"></image>
           <view class="collection-text-container">
             <text class="collection-text">{{item.text}}</text>
-            <text class="collection-count">{{isLoggedIn ? item.count : 0}}</text>
           </view>
         </view>
       </block>
