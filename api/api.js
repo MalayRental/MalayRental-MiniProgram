@@ -26,6 +26,7 @@ const API = {
   // 聊天相关
   CHAT: {
     GET_CHAT_LIST: '/api/chat/getChatList',
+    CREATE_CHAT: '/api/chat/createChat',
   },
   // 收藏相关
   FAVORITE: {

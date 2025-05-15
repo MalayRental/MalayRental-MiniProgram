@@ -1,11 +1,6 @@
 const { API } = require('../api');
 const request = require('../request');
 
-/**
- * 获取会话列表
- * @param {string} runUser 用户ID
- * @returns {Promise}
- */
 const getChatList = (runUser) => {
   const data = {
     message: '获取会话列表',
@@ -35,8 +30,25 @@ const readChatMessages = (runUser, chatId) => {
   return request.post('/api/chat/readChatMessages', data);
 };
 
+const createChat = (runUser, staffId) => {
+  const data = {
+    message: '创建聊天会话',
+    timestamp: Date.now(),
+    data: { runUser, staffId }
+  };
+  return request.post(API.CHAT.CREATE_CHAT, data)
+    .then(res => {
+      if (res.code === 200 && res.data) {
+        return res.data;
+      } else {
+        return Promise.reject(res.message || '创建会话失败');
+      }
+    });
+};
+
 module.exports = {
   getChatList,
   getAllMessages,
-  readChatMessages
+  readChatMessages,
+  createChat
 }; 

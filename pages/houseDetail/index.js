@@ -2,6 +2,7 @@ const app = getApp()
 const { houseDetailService } = require('../../api/service/index');
 const { isLoggedIn, navigateToLogin, getUserInfo } = require('../../utils/userUtils');
 const { addFavoriteItem, removeFavoriteItem, checkFavoriteStatus } = require('../../api/service/favoriteService');
+const { chatService } = require('../../api/service/index');
 
 Page({
   data: {
@@ -116,9 +117,25 @@ Page({
       setTimeout(() => { navigateToLogin(); }, 800);
       return;
     }
+    const userInfo = getUserInfo();
     const ownerId = this.data.house.owner && this.data.house.owner.id;
-    if (ownerId) {
-      wx.navigateTo({ url: `/pages/chatOnline/index?id=${ownerId}` });
+    if (userInfo && userInfo.userId && ownerId) {
+      wx.showLoading({ title: '进入聊天...' });
+      chatService.createChat(userInfo.userId, ownerId)
+        .then(chatData => {
+          wx.hideLoading();
+          wx.navigateTo({
+            url: `/pages/chatOnline/index?id=${chatData.chatId}` +
+              `&staffAvatar=${encodeURIComponent(chatData.staffAvatar)}` +
+              `&staffStatus=${chatData.staffStatus}` +
+              `&staffName=${encodeURIComponent(chatData.staffName)}` +
+              `&staffId=${chatData.staffId}`
+          });
+        })
+        .catch(err => {
+          wx.hideLoading();
+          wx.showToast({ title: err || '进入聊天失败', icon: 'none' });
+        });
     } else {
       wx.showToast({ title: '无房东信息', icon: 'none' });
     }
