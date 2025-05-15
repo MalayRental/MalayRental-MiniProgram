@@ -59,7 +59,7 @@
 .avatar {
   width: 100rpx;
   height: 100rpx;
-  border-radius: 12rpx;
+  border-radius: 50%;
   background-color: #f0f0f0;
 }
 

@@ -52,7 +52,7 @@
         </view>
         
         <view class="contact-item">
-          <image class="contact-icon" src="/assets/icons/phone.png" mode="aspectFit"></image>
+          <image class="contact-icon" src="/assets/icons/phone-black.png" mode="aspectFit"></image>
           <view class="contact-info">+60 12-345 6789</view>
         </view>
         

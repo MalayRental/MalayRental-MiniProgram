@@ -16,24 +16,16 @@ const API = {
     AUTO_LOGIN: '/api/user/autoLogin',
     LOGOUT: '/api/user/logout',
     REGISTER: '/api/user/register',
-    WX_LOGIN: '/api/user/wxLogin',
-    SEND_CODE: '/api/user/sendCode',
-    GET_USER_INFO: '/api/user/info',
-    UPDATE_USER_INFO: '/api/user/update',
+    WX_LOGIN: '/api/user/wxLogin'
   },
   // 房源相关
   HOUSE: {
     GET_HOUSE_LIST: '/api/house/list',
-    GET_HOUSE_DETAIL: '/api/house/detail',
-    FAVORITE_HOUSE: '/api/house/favorite',
-    GET_FAVORITE_LIST: '/api/user/favorites',
-    GET_HISTORY_LIST: '/api/user/history',
+    GET_HOUSE_DETAIL: '/api/house/detail'
   },
   // 聊天相关
   CHAT: {
-    GET_CHAT_LIST: '/api/chat/list',
-    GET_CHAT_HISTORY: '/api/chat/history',
-    MARK_AS_READ: '/api/chat/read',
+    GET_CHAT_LIST: '/api/chat/getChatList',
   },
 };
 
