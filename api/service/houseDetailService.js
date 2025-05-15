@@ -1,10 +1,21 @@
 const { post } = require('../request');
 const { BASE_URL } = require('../api');
+const { getUserInfo, isLoggedIn } = require('../../utils/userUtils');
 
 const getHouseDetail = (houseId) => {
+  let data = { houseId };
+  try {
+    let userInfo = require('../../utils/userUtils').getUserInfo();
+    if (typeof userInfo === 'string') {
+      userInfo = JSON.parse(userInfo);
+    }
+    if (userInfo && userInfo.userId) {
+      data.runUser = userInfo.userId;
+    }
+  } catch (e) {}
   const requestData = {
     message: "获取房源信息列表",
-    data: { houseId }
+    data
   };
 
   return post('/api/house/getHouseDetail', requestData)

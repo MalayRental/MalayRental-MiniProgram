@@ -34,6 +34,10 @@ const API = {
     REMOVE_FAVORITE_ITEM: '/api/favorite/removeFavoriteItem',
     CHECK_FAVORITE_STATUS: '/api/favorite/checkFavoriteStatus',
   },
+  // 历史浏览相关
+  HISTORY: {
+    GET_HISTORY_LIST: '/api/history/getHistoryList'
+  },
 };
 
 module.exports = {

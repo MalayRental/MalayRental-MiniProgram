@@ -1,4 +1,6 @@
 const app = getApp()
+const { getHistoryList } = require('../../api/service/historyService');
+const { getUserInfo, isLoggedIn, navigateToLogin } = require('../../utils/userUtils');
 
 Page({
   data: {
@@ -21,102 +23,45 @@ Page({
   
   // 获取浏览历史列表
   getHistoryList: function() {
-    this.setData({
-      loading: true
-    });
-    
-    // 这里应该是从服务器或本地存储获取浏览历史数据
-    // 以下是模拟数据
-    setTimeout(() => {
-      const historyList = [
-        {
-          id: '1005',
-          title: '蒲种Puchong高档别墅',
-          address: '蒲种, IOI Mall 附近',
-          price: '5500',
-          priceUnit: 'RM/月',
-          area: '200',
-          areaUnit: '㎡',
-          roomType: '5室3厅3卫',
-          isFurnished: true,
-          tags: ['泳池别墅', '花园', '停车位'],
-          imageUrl: '/assets/images/house4.jpg',
-          viewTime: '2023-10-18 15:30',
-          viewDate: '2023-10-18'
-        },
-        {
-          id: '1006',
-          title: '吉隆坡市中心高级公寓',
-          address: '吉隆坡市中心, KLCC 附近',
-          price: '4200',
-          priceUnit: 'RM/月',
-          area: '110',
-          areaUnit: '㎡',
-          roomType: '3室2厅2卫',
-          isFurnished: true,
-          tags: ['豪华装修', '中央空调', '健身房'],
-          imageUrl: '/assets/images/house5.jpg',
-          viewTime: '2023-10-18 10:15',
-          viewDate: '2023-10-18'
-        },
-        {
-          id: '1003',
-          title: 'Cyberjaya现代化公寓',
-          address: 'Cyberjaya, Multimedia University 附近',
-          price: '2500',
-          priceUnit: 'RM/月',
-          area: '76',
-          areaUnit: '㎡',
-          roomType: '3室2厅2卫',
-          isFurnished: false,
-          tags: ['科技园区', '环境优美', '游泳池'],
-          imageUrl: '/assets/images/house3.jpg',
-          viewTime: '2023-10-17 12:45',
-          viewDate: '2023-10-17'
-        },
-        {
-          id: '1002',
-          title: '双威镇大学城学生公寓',
-          address: '双威镇, Sunway University 附近',
-          price: '1800',
-          priceUnit: 'RM/月',
-          area: '60',
-          areaUnit: '㎡',
-          roomType: '1室1厅1卫',
-          isFurnished: true,
-          tags: ['家电齐全', '学区房', '安保严密'],
-          imageUrl: '/assets/images/house2.jpg',
-          viewTime: '2023-10-16 09:20',
-          viewDate: '2023-10-16'
-        },
-        {
-          id: '1001',
-          title: '吉隆坡市中心豪华公寓',
-          address: '吉隆坡市中心, KLCC 附近',
-          price: '3200',
-          priceUnit: 'RM/月',
-          area: '85',
-          areaUnit: '㎡',
-          roomType: '2室1厅1卫',
-          isFurnished: true,
-          tags: ['地铁附近', '拎包入住', '电梯房'],
-          imageUrl: '/assets/images/house1.jpg',
-          viewTime: '2023-10-15 18:10',
-          viewDate: '2023-10-15'
-        }
-      ];
-      
-      // 按日期分组
-      const groupedData = this.groupByDate(historyList);
-      
-      this.setData({
-        historyList,
-        groupedHistory: groupedData,
-        loading: false,
-        isEmpty: historyList.length === 0,
-        showClearBtn: historyList.length > 0
+    this.setData({ loading: true });
+    if (!isLoggedIn()) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      setTimeout(() => { navigateToLogin(); }, 800);
+      this.setData({ loading: false, isEmpty: true, historyList: [], groupedHistory: [], showClearBtn: false });
+      return;
+    }
+    const userInfo = getUserInfo();
+    if (!userInfo || !userInfo.userId) {
+      wx.showToast({ title: '用户信息异常', icon: 'none' });
+      this.setData({ loading: false, isEmpty: true, historyList: [], groupedHistory: [], showClearBtn: false });
+      return;
+    }
+    getHistoryList(userInfo.userId)
+      .then(historyList => {
+        // 按日期分组
+        const groupedData = this.groupByDate(historyList.map(item => {
+          // 兼容后端无viewDate字段，使用createTime日期
+          const date = item.createTime ? item.createTime.split('T')[0] : '';
+          return { ...item, viewDate: date, viewTime: item.createTime };
+        }));
+        this.setData({
+          historyList,
+          groupedHistory: groupedData,
+          loading: false,
+          isEmpty: historyList.length === 0,
+          showClearBtn: historyList.length > 0
+        });
+      })
+      .catch(() => {
+        this.setData({
+          historyList: [],
+          groupedHistory: [],
+          loading: false,
+          isEmpty: true,
+          showClearBtn: false
+        });
+        wx.showToast({ title: '获取历史浏览失败', icon: 'none' });
       });
-    }, 500);
   },
   
   // 按日期分组历史记录
