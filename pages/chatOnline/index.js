@@ -1,6 +1,15 @@
 const app = getApp()
 const { chatService } = require('../../api/service/index');
 const userUtils = require('../../utils/userUtils');
+const { getImageUrl } = require('../../api/service/imageGetService');
+const { BASE_URL } = require('../../api/api');
+
+function formatHouseCoverUrl(image) {
+  if (image && (image.startsWith('http://') || image.startsWith('https://'))) {
+    return image;
+  }
+  return `${BASE_URL}/api/images/houseCover/${image}`;
+}
 
 Page({
   data: {
@@ -15,20 +24,32 @@ Page({
     },
     navBarHeight: 0, // 导航栏高度
     messageListStyle: '', // 消息列表样式
-    messages: []
+    messages: [],
+    wantHouseCard: null // 房源卡片信息
   },
 
   onLoad: function(options) {
-    const { id, staffAvatar, staffStatus, staffName, staffId } = options;
+    const { id, staffAvatar, staffStatus, staffName, staffId, houseId, coverImage, houseName, price, area } = options;
     const contact = {
-      avatar: userUtils.processAvatarUrl(decodeURIComponent(staffAvatar || '')),
+      avatar: getImageUrl('avatar', decodeURIComponent(staffAvatar || '')),
       name: decodeURIComponent(staffName || ''),
       userId: staffId || '',
       online: staffStatus === 'online'
     };
+    let wantHouseCard = null;
+    if (houseId && coverImage && houseName && price && area) {
+      wantHouseCard = {
+        houseId,
+        coverImage: formatHouseCoverUrl(decodeURIComponent(coverImage)),
+        houseName: decodeURIComponent(houseName),
+        price,
+        area: decodeURIComponent(area)
+      };
+    }
     this.setData({
       userId: id,
-      contact
+      contact,
+      wantHouseCard
     });
     // 已读所有消息
     const userInfo = wx.getStorageSync('userInfo');
@@ -49,17 +70,45 @@ Page({
     }
     chatService.getAllMessages(userInfo.userId, this.data.userId).then(res => {
       if (res.code === 200 && Array.isArray(res.data)) {
-        const messages = res.data.map(item => ({
-          id: item.messageId,
-          content: item.messageType === 'Image' ? '[图片消息]' :
-                   item.messageType === 'Card' ? '[卡片消息]' :
-                   (item.content || ''),
-          time: this.formatChatTime(item.createTime),
-          isMine: item.senderId === userInfo.userId,
-          avatar: item.senderId === userInfo.userId
-            ? userUtils.processAvatarUrl(userInfo.avatar)
-            : this.data.contact.avatar
-        }));
+        const messages = res.data.map(item => {
+          // 处理基本消息属性
+          const messageObj = {
+            id: item.messageId,
+            time: this.formatChatTime(item.createTime),
+            isMine: item.senderId === userInfo.userId,
+            avatar: item.senderId === userInfo.userId
+              ? getImageUrl('avatar', userInfo.avatar)
+              : this.data.contact.avatar
+          };
+
+          // 解析卡片消息
+          if (item.messageType === 'Card') {
+            if (item.content.startsWith('[WantHouse]')) {
+              try {
+                const jsonStr = item.content.substring('[WantHouse]'.length);
+                const cardData = JSON.parse(jsonStr);
+                // 处理封面图片路径
+                if (cardData.coverImage) {
+                  cardData.coverImage = getImageUrl('houseCover', cardData.coverImage);
+                }
+                messageObj.cardData = cardData;
+                messageObj.cardType = 'WantHouse';
+                messageObj.content = ''; // 卡片消息不需要文本内容
+              } catch (e) {
+                console.error('解析房源卡片失败:', e);
+                messageObj.content = '[房源卡片]';
+              }
+            } else {
+              messageObj.content = '[卡片消息]';
+            }
+          } else if (item.messageType === 'Image') {
+            messageObj.content = '[图片消息]';
+          } else {
+            messageObj.content = item.content || '';
+          }
+          
+          return messageObj;
+        });
         this.setData({ messages }, () => this.scrollToBottom());
       } else {
         this.setData({ messages: [] });
@@ -194,5 +243,53 @@ Page({
         scrollIntoView: lastMessageId
       });
     }
+  },
+
+  // 关闭房源卡片
+  closeWantHouseCard: function() {
+    this.setData({ wantHouseCard: null });
+  },
+
+  // 查看房源详情
+  viewHouseDetail: function(e) {
+    const houseId = e.currentTarget.dataset.houseid;
+    if (houseId) {
+      wx.navigateTo({
+        url: `/pages/houseDetail/index?id=${houseId}`
+      });
+    }
+  },
+
+  // 发送房源卡片
+  sendWantHouseCard: function() {
+    const card = this.data.wantHouseCard;
+    if (!card) return;
+    
+    const cardData = {
+      houseId: card.houseId,
+      coverImage: card.coverImage,
+      houseName: card.houseName,
+      price: card.price,
+      area: card.area
+    };
+    
+    const jsonStr = JSON.stringify(cardData);
+    const newMessage = {
+      id: 'm' + (this.data.messages.length + 1),
+      cardData: cardData,
+      cardType: 'WantHouse',
+      content: `[WantHouse]${jsonStr}`, // 保持原消息格式，方便后台处理
+      time: this.getCurrentTime(),
+      isMine: true,
+      avatar: '/assets/images/user-avatar.jpg'
+    };
+    
+    const messages = [...this.data.messages, newMessage];
+    this.setData({
+      messages,
+      wantHouseCard: null
+    }, () => {
+      this.scrollToBottom();
+    });
   }
 }) 

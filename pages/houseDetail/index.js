@@ -3,6 +3,7 @@ const { houseDetailService } = require('../../api/service/index');
 const { isLoggedIn, navigateToLogin, getUserInfo } = require('../../utils/userUtils');
 const { addFavoriteItem, removeFavoriteItem, checkFavoriteStatus } = require('../../api/service/favoriteService');
 const { chatService } = require('../../api/service/index');
+const { getImageUrl } = require('../../api/service/imageGetService');
 
 Page({
   data: {
@@ -30,12 +31,12 @@ Page({
         // 处理图片，coverImage放首位
         let images = [];
         if (detail.coverImage) {
-          images.push(detail.coverImage);
+          images.push(getImageUrl('houseCover', detail.coverImage));
         }
         if (detail.detailImages && Array.isArray(detail.detailImages)) {
-          images = images.concat(detail.detailImages);
+          images = images.concat(detail.detailImages.map(img => getImageUrl('houseDetail', img)));
         } else if (detail.detailImages && typeof detail.detailImages === 'string') {
-          images = images.concat(detail.detailImages.split(','));
+          images = images.concat(detail.detailImages.split(',').map(img => getImageUrl('houseDetail', img)));
         }
         // 格式化页面所需字段
         const house = {
@@ -134,12 +135,18 @@ Page({
       chatService.createChat(userInfo.userId, ownerId)
         .then(chatData => {
           wx.hideLoading();
+          const house = this.data.house;
           wx.navigateTo({
             url: `/pages/chatOnline/index?id=${chatData.chatId}` +
               `&staffAvatar=${encodeURIComponent(chatData.staffAvatar)}` +
               `&staffStatus=${chatData.staffStatus}` +
               `&staffName=${encodeURIComponent(chatData.staffName)}` +
-              `&staffId=${chatData.staffId}`
+              `&staffId=${chatData.staffId}` +
+              `&houseId=${house.id}` +
+              `&coverImage=${encodeURIComponent(house.images && house.images[0] ? house.images[0] : '')}` +
+              `&houseName=${encodeURIComponent(house.houseName)}` +
+              `&price=${house.price}` +
+              `&area=${encodeURIComponent(house.area)}`
           });
         })
         .catch(err => {

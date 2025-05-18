@@ -2,6 +2,39 @@
 <!-- 自定义导航栏 -->
 <navigation-bar title="地图找房" back="{{true}}" background="#4ac924" color="#ffffff"></navigation-bar>
 
+<!-- 筛选器悬浮卡片 -->
+<view class="filter-container">
+  <!-- 位置筛选 -->
+  <view class="filter-item">
+    <picker mode="selector" range="{{filters.locations}}" value="{{filters.locations.indexOf(filters.selectedLocation)}}" bindchange="handleLocationChange">
+      <view class="filter-selector">
+        <text>{{filters.selectedLocation}}</text>
+        <view class="arrow-down"></view>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 户型筛选 -->
+  <view class="filter-item">
+    <picker mode="selector" range="{{filters.rooms}}" value="{{filters.rooms.indexOf(filters.selectedRoom)}}" bindchange="handleRoomChange">
+      <view class="filter-selector">
+        <text>{{filters.selectedRoom}}</text>
+        <view class="arrow-down"></view>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 租金筛选 -->
+  <view class="filter-item">
+    <picker mode="selector" range="{{filters.prices}}" value="{{filters.prices.indexOf(filters.selectedPrice)}}" bindchange="handlePriceChange">
+      <view class="filter-selector">
+        <text>{{filters.selectedPrice}}</text>
+        <view class="arrow-down"></view>
+      </view>
+    </picker>
+  </view>
+</view>
+
 <view class="map-container">
   <map 
     id="houseMap"

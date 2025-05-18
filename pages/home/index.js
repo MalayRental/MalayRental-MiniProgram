@@ -1,5 +1,6 @@
 const app = getApp()
 const { bannerService, houseAreaService, houseListService } = require('../../api/service/index');
+const { getImageUrl } = require('../../api/service/imageGetService');
 
 Page({
   data: {
@@ -235,8 +236,13 @@ Page({
     
     bannerService.getBannerList()
       .then(banners => {
+        // 处理banner图片地址
+        const bannersWithUrl = banners.map(item => ({
+          ...item,
+          image: getImageUrl('banner', item.image)
+        }));
         this.setData({
-          banners: banners
+          banners: bannersWithUrl
         });
         wx.hideLoading();
       })
@@ -274,9 +280,14 @@ Page({
     wx.showLoading({ title: '加载中...' });
     houseListService.getHouseList()
       .then(houseList => {
+        // 处理房源封面图片地址
+        const housesWithUrl = houseList.map(item => ({
+          ...item,
+          coverImage: getImageUrl('houseCover', item.coverImage)
+        }));
         this.setData({
-          houses: houseList,
-          filteredHouses: houseList
+          houses: housesWithUrl,
+          filteredHouses: housesWithUrl
         });
         wx.hideLoading();
       })

@@ -1,5 +1,6 @@
 const { post } = require('../request');
-const { API, BASE_URL } = require('../api');
+const { API } = require('../api');
+const { getImageUrl } = require('./imageGetService');
 
 const getFavoriteList = (userId) => {
   const requestData = {
@@ -22,7 +23,7 @@ const getFavoriteList = (userId) => {
             price: house.price,
             createTime: house.createTime,
             updateTime: house.updateTime,
-            coverImage: formatImageUrl(house.coverImage),
+            coverImage: getImageUrl('houseCover', house.coverImage),
             status: house.status
           };
         });
@@ -77,14 +78,6 @@ const checkFavoriteStatus = (userId, houseId) => {
       }
     });
 };
-
-function formatImageUrl(image) {
-  if (!image) return '';
-  if (image.startsWith('http://') || image.startsWith('https://')) {
-    return image;
-  }
-  return `${BASE_URL}/api/images/houseCover/${image}`;
-}
 
 module.exports = {
   getFavoriteList,

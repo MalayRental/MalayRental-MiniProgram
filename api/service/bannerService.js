@@ -1,5 +1,6 @@
 const { post } = require('../request');
-const { API, BASE_URL } = require('../api');
+const { API } = require('../api');
+const { getImageUrl } = require('./imageGetService');
 
 const getBannerList = () => {
   // 构建请求体
@@ -15,11 +16,11 @@ const getBannerList = () => {
       const { data, code, message } = response;
       
       if (code === 200) {
-        // 处理图片路径 - 如果需要拼接完整URL，可以在这里处理
+        // 处理图片路径
         const banners = data.map(banner => {
           return {
             id: banner.bannerId,
-            image: formatImageUrl(banner.image),
+            image: getImageUrl('banner', banner.image),
             link: banner.link === "null" ? null : banner.link
           };
         });
@@ -34,16 +35,6 @@ const getBannerList = () => {
       console.error('获取Banner图失败:', error);
       return Promise.reject(error);
     });
-};
-
-const formatImageUrl = (imageUrl) => {
-  // 如果是完整URL（以http或https开头），则直接返回
-  if (imageUrl && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
-    return imageUrl;
-  }
-  
-  // 拼接图片服务器地址和前缀路径
-  return `${BASE_URL}/api/images/banner/${imageUrl}`;
 };
 
 module.exports = {

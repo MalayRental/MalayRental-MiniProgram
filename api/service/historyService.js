@@ -2,7 +2,8 @@
 // 历史浏览相关服务
 
 const { post } = require('../request');
-const { API, BASE_URL } = require('../api');
+const { API } = require('../api');
+const { getImageUrl } = require('./imageGetService');
 
 /**
  * 获取历史浏览列表
@@ -29,7 +30,7 @@ const getHistoryList = (userId) => {
             areaUnit: '㎡',
             price: house.price,
             priceUnit: 'RM/月',
-            imageUrl: formatImageUrl(house.coverImage),
+            imageUrl: getImageUrl('houseCover', house.coverImage),
             createTime: house.createTime,
             updateTime: house.updateTime,
             historyId: item.historyId
@@ -40,14 +41,6 @@ const getHistoryList = (userId) => {
       }
     });
 };
-
-function formatImageUrl(image) {
-  if (!image) return '';
-  if (image.startsWith('http://') || image.startsWith('https://')) {
-    return image;
-  }
-  return `${BASE_URL}/api/images/houseCover/${image}`;
-}
 
 module.exports = {
   getHistoryList

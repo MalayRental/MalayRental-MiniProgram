@@ -11,6 +11,11 @@
       <view class="form-label">昵称</view>
       <input class="form-input" value="{{userInfo.nickName}}" placeholder="请输入昵称" bindinput="inputNickname" />
     </view>
+
+    <view class="form-group">
+      <view class="form-label">姓名</view>
+      <input class="form-input" value="{{userInfo.fullName}}" placeholder="请输入姓名" bindinput="inputFullName" />
+    </view>
     
     <view class="form-row">
       <view class="form-column">
@@ -37,6 +42,11 @@
     <view class="form-group">
       <view class="form-label">邮箱</view>
       <input class="form-input" value="{{userInfo.email}}" placeholder="请输入邮箱" bindinput="inputEmail" />
+    </view>
+
+    <view class="form-group">
+      <view class="form-label">学校</view>
+      <input class="form-input" value="{{userInfo.school}}" placeholder="请输入学校" bindinput="inputSchool" />
     </view>
     
     <view class="form-group">

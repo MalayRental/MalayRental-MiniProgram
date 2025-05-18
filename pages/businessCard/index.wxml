@@ -1,20 +1,15 @@
 <!-- 我的名片页面 -->
 <navigation-bar title="我的名片" back="{{true}}" background="#4ac924" color="#fff"></navigation-bar>
-<view class="business-card-container">
-  <!-- 头像区域 -->
-  <view class="avatar-container">
-    <view class="avatar-wrapper" bindtap="{{isEditing ? 'uploadAvatar' : ''}}">
-      <image class="avatar" src="{{isEditing ? editData.avatar : userCard.avatar}}" mode="aspectFill"></image>
-      <view class="avatar-edit-mask" wx:if="{{isEditing}}">
-        <text>点击更换</text>
+<view class="page-container">
+  <view class="content">
+    <!-- 头像区域 -->
+    <view class="avatar-container">
+      <view class="avatar-wrapper">
+        <image class="avatar" src="{{userCard.avatar}}" mode="aspectFill"></image>
       </view>
     </view>
-  </view>
-  
-  <!-- 信息区域 -->
-  <view class="info-container">
-    <!-- 显示模式 -->
-    <block wx:if="{{!isEditing}}">
+    <!-- 信息区域 -->
+    <view class="info-container">
       <view class="info-item">
         <view class="info-label">姓名</view>
         <view class="info-value">{{userCard.name}}</view>
@@ -35,43 +30,10 @@
         <view class="info-label">学校</view>
         <view class="info-value">{{userCard.school}}</view>
       </view>
-    </block>
-    
-    <!-- 编辑模式 -->
-    <block wx:else>
-      <view class="info-item">
-        <view class="info-label">姓名</view>
-        <input class="info-input" value="{{editData.name}}" data-field="name" bindinput="handleInputChange" placeholder="请输入姓名" />
-      </view>
-      <view class="info-item">
-        <view class="info-label">性别</view>
-        <picker class="info-picker" bindchange="handleGenderChange" value="{{editData.gender === '男' ? 0 : 1}}" range="{{['男', '女']}}">
-          <view class="picker-value">{{editData.gender}}</view>
-        </picker>
-      </view>
-      <view class="info-item">
-        <view class="info-label">手机号</view>
-        <input class="info-input" type="number" value="{{editData.phone}}" data-field="phone" bindinput="handleInputChange" placeholder="请输入手机号" />
-      </view>
-      <view class="info-item">
-        <view class="info-label">电子邮箱</view>
-        <input class="info-input" value="{{editData.email}}" data-field="email" bindinput="handleInputChange" placeholder="请输入电子邮箱" />
-      </view>
-      <view class="info-item">
-        <view class="info-label">学校</view>
-        <input class="info-input" value="{{editData.school}}" data-field="school" bindinput="handleInputChange" placeholder="请输入学校" />
-      </view>
-    </block>
-  </view>
-  
-  <!-- 底部按钮区域 -->
-  <view class="button-container">
-    <block wx:if="{{isEditing}}">
-      <button class="cancel-button" bindtap="cancelEdit">取消</button>
-      <button class="save-button" bindtap="toggleEdit">保存</button>
-    </block>
-    <block wx:else>
-      <button class="edit-button" bindtap="toggleEdit">编辑</button>
-    </block>
+    </view>
+    <!-- 底部按钮区域 -->
+    <view class="button-container">
+      <button class="edit-button" bindtap="handleEditTap">编辑</button>
+    </view>
   </view>
 </view> 

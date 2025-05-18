@@ -1,5 +1,5 @@
 const { post } = require('../request');
-const { BASE_URL } = require('../api');
+const { getImageUrl } = require('./imageGetService');
 
 const getHouseList = () => {
   const requestData = {
@@ -19,7 +19,7 @@ const getHouseList = () => {
           orientation: house.orientation,
           proportion: house.proportion,
           price: house.price,
-          coverImage: formatImageUrl(house.coverImage),
+          coverImage: getImageUrl('houseCover', house.coverImage),
           status: house.status
         }));
       } else {
@@ -31,13 +31,6 @@ const getHouseList = () => {
       return Promise.reject(error);
     });
 };
-
-function formatImageUrl(image) {
-  if (image && (image.startsWith('http://') || image.startsWith('https://'))) {
-    return image;
-  }
-  return `${BASE_URL}/api/images/houseCover/${image}`;
-}
 
 module.exports = {
   getHouseList

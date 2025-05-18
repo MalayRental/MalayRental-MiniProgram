@@ -1,6 +1,6 @@
 {
   "navigationBarTitleText": "地图找房",
-  "enablePullDownRefresh": true,
+  "enablePullDownRefresh": false,
   "backgroundTextStyle": "dark",
   "navigationStyle": "custom",
   "usingComponents": {

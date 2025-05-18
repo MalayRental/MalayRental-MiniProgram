@@ -2,6 +2,7 @@
  * 用户信息和登录状态管理工具
  */
 const { userAccountService } = require('../api/service/index');
+const { getImageUrl } = require('../api/service/imageGetService');
 
 // 存储键名
 const STORAGE_KEYS = {
@@ -126,28 +127,6 @@ const formatPhoneNumber = (phoneNumber) => {
   return phoneNumber.substring(0, 3) + '****' + phoneNumber.substring(7);
 };
 
-// 处理头像URL
-const processAvatarUrl = (avatar) => {
-  if (!avatar) return '/assets/images/default-avatar.png';
-  
-  // 如果是默认头像名称，直接返回本地默认头像
-  if (avatar.includes('default-avatar.png')) {
-    return '/assets/images/default-avatar.png';
-  }
-  
-  // 如果已经是完整的URL，直接返回
-  if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
-    return avatar;
-  }
-  
-  // 如果是相对路径，检查是否以'/'开头
-  if (!avatar.startsWith('/')) {
-    return '/' + avatar;
-  }
-  
-  return avatar;
-};
-
 // -----------登录相关函数--------------
 
 /**
@@ -203,7 +182,7 @@ const autoLogin = (phoneNumber, userToken, app) => {
       
       // 处理用户头像URL
       if (userInfo && userInfo.avatar) {
-        userInfo.avatar = processAvatarUrl(userInfo.avatar);
+        userInfo.avatar = getImageUrl('avatar', userInfo.avatar);
       }
       
       // 设置全局数据
@@ -310,8 +289,6 @@ module.exports = {
   savePhoneNumber,
   getPhoneNumber,
   formatPhoneNumber,
-  processAvatarUrl,
-  // 新增导出函数
   checkLoginStatus,
   autoLogin,
   handleLoginFailure,

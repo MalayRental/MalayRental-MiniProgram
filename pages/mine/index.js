@@ -1,5 +1,6 @@
 const app = getApp()
 const userUtils = require('../../utils/userUtils');
+const { getImageUrl } = require('../../api/service/imageGetService');
 
 Page({
   data: {
@@ -88,7 +89,7 @@ Page({
     
     // 处理用户头像URL
     if (userInfo && userInfo.avatar) {
-      userInfo.avatar = userUtils.processAvatarUrl(userInfo.avatar);
+      userInfo.avatar = getImageUrl('avatar', userInfo.avatar);
     }
     
     // 格式化手机号

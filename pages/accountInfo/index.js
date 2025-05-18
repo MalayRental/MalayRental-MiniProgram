@@ -1,4 +1,8 @@
 const app = getApp()
+const { getAccountInfo, updateAccountInfo, updateUserAvatar } = require('../../api/service/userAccountService');
+const { getUserInfo } = require('../../utils/userUtils');
+const { uploadAvatar } = require('../../api/service/imageUploadService');
+const { BASE_URL } = require('../../api/api');
 
 // 账号资料页面
 Page({
@@ -6,71 +10,91 @@ Page({
     userInfo: {
       avatarUrl: '',
       nickName: '',
+      fullName: '',
       gender: 0,
       age: '',
       phone: '',
       email: '',
+      school: '',
       bio: ''
     },
-    genders: ['未设置', '男', '女'],
+    genders: ['保密', '男', '女'],
     genderIndex: 0
   },
 
   onLoad: function (options) {
     // 获取用户信息
-    this.getUserInfo();
+    this.fetchAccountInfo();
   },
 
-  getUserInfo: function () {
-    // 这里可以从后端获取用户信息
-    // 示例数据
-    const userInfo = {
-      avatarUrl: '/assets/images/user-avatar.jpg',
-      nickName: '用户昵称',
-      gender: 1,
-      age: '28',
-      phone: '13800138000',
-      email: 'example@mail.com',
-      bio: '这是一段个人简介，描述自己的特点和租房需求等。'
-    };
-    
-    this.setData({
-      userInfo,
-      genderIndex: userInfo.gender
+  fetchAccountInfo: function () {
+    const localUserInfo = getUserInfo();
+    if (!localUserInfo || !localUserInfo.userId) {
+      wx.showToast({ title: '未登录', icon: 'none' });
+      return;
+    }
+    getAccountInfo({ userId: localUserInfo.userId }).then(res => {
+      if (res.code === 200 && res.data) {
+        const data = res.data;
+        this.setData({
+          userInfo: {
+            avatarUrl:
+              !data.avatar || data.avatar.includes('default-avatar.png')
+                ? '/assets/images/default-avatar.png'
+                : (data.avatar.startsWith('http') || data.avatar.startsWith('https')
+                    ? data.avatar
+                    : (BASE_URL + '/api/images/avatar/' + data.avatar)),
+            nickName: data.userName || '',
+            fullName: data.fullName || '',
+            gender: data.gender === '男' ? 1 : (data.gender === '女' ? 2 : 0),
+            age: data.age || '',
+            phone: data.phoneNumber || '',
+            email: data.email || '',
+            school: data.school || '',
+            bio: data.bio || ''
+          },
+          genderIndex: data.gender === '男' ? 1 : (data.gender === '女' ? 2 : 0)
+        });
+      } else {
+        wx.showToast({ title: res.message || '获取资料失败', icon: 'none' });
+      }
+    }).catch(() => {
+      wx.showToast({ title: '获取资料失败', icon: 'none' });
     });
   },
 
   chooseAvatar: function () {
+    const localUserInfo = getUserInfo();
+    if (!localUserInfo || !localUserInfo.userId) {
+      wx.showToast({ title: '未登录', icon: 'none' });
+      return;
+    }
     wx.chooseImage({
       count: 1,
       sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
       success: (res) => {
         const tempFilePath = res.tempFilePaths[0];
-        this.setData({
-          'userInfo.avatarUrl': tempFilePath
+        wx.showLoading({ title: '上传中...' });
+        uploadAvatar(tempFilePath).then(uploadRes => {
+          const filename = uploadRes.data.filename;
+          // 更新用户头像信息
+          return updateUserAvatar({ userId: localUserInfo.userId, avatar: filename });
+        }).then(updateRes => {
+          wx.hideLoading();
+          if (updateRes.code === 200) {
+            wx.showToast({ title: '头像已更新', icon: 'success' });
+            // 刷新用户信息
+            this.fetchAccountInfo();
+          } else {
+            wx.showToast({ title: updateRes.message || '头像更新失败', icon: 'none' });
+          }
+        }).catch(() => {
+          wx.hideLoading();
+          wx.showToast({ title: '头像上传失败', icon: 'none' });
         });
-        
-        // 这里可以调用上传接口
-        this.uploadAvatar(tempFilePath);
       }
     });
-  },
-
-  uploadAvatar: function (filePath) {
-    // 上传头像的逻辑
-    wx.showLoading({
-      title: '上传中...',
-    });
-    
-    // 模拟上传
-    setTimeout(() => {
-      wx.hideLoading();
-      wx.showToast({
-        title: '上传成功',
-        icon: 'success'
-      });
-    }, 1500);
   },
 
   inputNickname: function (e) {
@@ -80,9 +104,10 @@ Page({
   },
 
   bindGenderChange: function (e) {
+    const idx = parseInt(e.detail.value);
     this.setData({
-      genderIndex: parseInt(e.detail.value),
-      'userInfo.gender': parseInt(e.detail.value)
+      genderIndex: idx,
+      'userInfo.gender': idx
     });
   },
 
@@ -104,31 +129,61 @@ Page({
     });
   },
 
+  inputSchool: function (e) {
+    this.setData({
+      'userInfo.school': e.detail.value
+    });
+  },
+
   inputBio: function (e) {
     this.setData({
       'userInfo.bio': e.detail.value
     });
   },
 
+  inputFullName: function (e) {
+    this.setData({
+      'userInfo.fullName': e.detail.value
+    });
+  },
+
   saveUserInfo: function () {
+    const localUserInfo = getUserInfo();
+    if (!localUserInfo || !localUserInfo.userId) {
+      wx.showToast({ title: '未登录', icon: 'none' });
+      return;
+    }
+    const { userInfo, genderIndex, genders } = this.data;
     wx.showLoading({
       title: '保存中...',
     });
-    
-    // 这里可以调用保存接口
-    setTimeout(() => {
+    updateAccountInfo({
+      userId: localUserInfo.userId,
+      fullName: userInfo.fullName,
+      gender: genders[genderIndex],
+      age: userInfo.age,
+      email: userInfo.email,
+      school: userInfo.school,
+      bio: userInfo.bio
+    }).then(res => {
       wx.hideLoading();
-      wx.showToast({
-        title: '保存成功',
-        icon: 'success',
-        duration: 2000,
-        success: () => {
-          // 返回上一页
-          setTimeout(() => {
-            wx.navigateBack();
-          }, 1500);
-        }
-      });
-    }, 1500);
+      if (res.code === 200) {
+        wx.showToast({
+          title: '保存成功',
+          icon: 'success',
+          duration: 2000,
+          success: () => {
+            setTimeout(() => {
+              wx.navigateBack();
+            }, 1500);
+          }
+        });
+      } else {
+        wx.showToast({ title: res.message || '保存失败', icon: 'none' });
+      }
+    }).catch(() => {
+      wx.hideLoading();
+      wx.showToast({ title: '保存失败', icon: 'none' });
+    });
   }
 }) 

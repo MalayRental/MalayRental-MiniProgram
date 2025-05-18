@@ -38,9 +38,24 @@
         ></image>
         <!-- 气泡和时间包裹 -->
         <view class="bubble-time-wrap {{item.isMine ? 'my-bubble-time' : 'other-bubble-time'}}">
-          <view class="message-bubble {{item.isMine ? 'my-bubble' : 'other-bubble'}}">
+          <!-- 普通消息 -->
+          <view wx:if="{{!item.cardData}}" class="message-bubble {{item.isMine ? 'my-bubble' : 'other-bubble'}}">
             <text class="message-content">{{item.content}}</text>
           </view>
+          
+          <!-- 房源卡片消息 -->
+          <view wx:if="{{item.cardData && item.cardType === 'WantHouse'}}" class="message-card {{item.isMine ? 'my-card' : 'other-card'}}">
+            <image class="message-card-cover" src="{{item.cardData.coverImage}}" mode="aspectFill"></image>
+            <view class="card-content">
+              <view class="card-name">{{item.cardData.houseName}}</view>
+              <view class="card-area">{{item.cardData.area}}</view>
+              <view class="card-bottom-row">
+                <view class="card-price">{{item.cardData.price}} RM/月</view>
+                <view class="card-view-btn" data-houseid="{{item.cardData.houseId}}" bindtap="viewHouseDetail">查看详情</view>
+              </view>
+            </view>
+          </view>
+          
           <view class="message-time {{item.isMine ? 'my-time' : 'other-time'}}">{{item.time}}</view>
         </view>
       </view>
@@ -48,6 +63,25 @@
     <!-- 底部留白已在CSS中设置，不需要额外元素 -->
     </view>
   </scroll-view>
+
+  <!-- wantHouseCard 房源卡片 -->
+  <view wx:if="{{wantHouseCard}}" class="want-house-card">
+    <view class="card-header">
+      <text class="card-title">👇猜你想要咨询？</text>
+      <image src="/assets/icons/close.png" class="card-close" bindtap="closeWantHouseCard"></image>
+    </view>
+    <view class="card-content-row">
+      <image class="card-cover" src="{{wantHouseCard.coverImage}}" mode="aspectFill"></image>
+      <view class="card-info">
+        <view class="card-name">{{wantHouseCard.houseName}}</view>
+        <view class="card-area">{{wantHouseCard.area}}</view>
+        <view class="card-price-row">
+          <view class="card-price">{{wantHouseCard.price}} RM/月</view>
+          <view class="card-send-btn" bindtap="sendWantHouseCard">发送房源</view>
+        </view>
+      </view>
+    </view>
+  </view>
 
   <!-- 底部输入框 -->
   <view class="input-container">

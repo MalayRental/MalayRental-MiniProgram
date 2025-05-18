@@ -22,17 +22,14 @@ const getHouseDetail = (houseId) => {
     .then(response => {
       const { data, code, message } = response;
       if (code === 200) {
-        // 处理图片
+        // 直接返回原始图片字段
         let detailImages = [];
         if (data.detailImages) {
-          detailImages = data.detailImages.split(',').map(img => formatImageUrl(img));
+          detailImages = data.detailImages.split(',');
         }
-        // 处理封面
-        const coverImage = data.coverImage ? formatCoverImageUrl(data.coverImage) : '';
-        // 收藏状态兼容处理
+        const coverImage = data.coverImage || '';
         const favoriteStatus = typeof data.favoriteStatus === 'boolean' ? data.favoriteStatus : false;
-        // 处理头像url
-        const ownerAvatar = formatAvatarUrl(data.ownerAvatar);
+        const ownerAvatar = data.ownerAvatar || '';
         return {
           ...data,
           detailImages,
@@ -49,28 +46,6 @@ const getHouseDetail = (houseId) => {
       return Promise.reject(error);
     });
 };
-
-function formatImageUrl(image) {
-  if (image && (image.startsWith('http://') || image.startsWith('https://'))) {
-    return image;
-  }
-  return `${BASE_URL}/api/images/houseDetail/${image}`;
-}
-
-function formatAvatarUrl(avatar) {
-  if (!avatar) return '';
-  if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
-    return avatar;
-  }
-  return `${BASE_URL}/api/images/avatar/${avatar}`;
-}
-
-function formatCoverImageUrl(image) {
-  if (image && (image.startsWith('http://') || image.startsWith('https://'))) {
-    return image;
-  }
-  return `${BASE_URL}/api/images/houseCover/${image}`;
-}
 
 module.exports = {
   getHouseDetail

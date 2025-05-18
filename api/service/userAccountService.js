@@ -143,11 +143,85 @@ const wxRegister = (params) => {
   return request.post(API.USER.REGISTER, data);
 };
 
+/**
+ * 获取用户详细资料
+ * @param {Object} params
+ * @param {string} params.userId 用户ID
+ * @returns {Promise}
+ */
+const getAccountInfo = (params) => {
+  const { userId } = params;
+  const data = {
+    message: "获取用户详细资料",
+    timestamp: Date.now(),
+    data: {
+      runUser: userId,
+      userId: userId
+    }
+  };
+  return request.post('/api/user/getAccountInfo', data);
+};
+
+/**
+ * 更新用户详细资料
+ * @param {Object} params
+ * @param {string} params.userId 用户ID
+ * @param {string} params.fullName 姓名
+ * @param {string} params.gender 性别
+ * @param {string|number} params.age 年龄
+ * @param {string} params.email 邮箱
+ * @param {string} params.school 学校
+ * @param {string} params.bio 个人简介
+ * @returns {Promise}
+ */
+const updateAccountInfo = (params) => {
+  const { userId, fullName, gender, age, email, school, bio } = params;
+  const data = {
+    message: "更新用户详细资料",
+    timestamp: Date.now(),
+    data: {
+      runUser: userId,
+      userId,
+      fullName,
+      gender,
+      age,
+      email,
+      school,
+      bio
+    }
+  };
+  return request.post('/api/user/updateAccountInfo', data);
+};
+
+/**
+ * 更新用户头像
+ * @param {Object} params
+ * @param {string} params.userId 用户ID
+ * @param {string} params.avatar 头像文件名
+ * @returns {Promise}
+ */
+const updateUserAvatar = (params) => {
+  const { userId, avatar } = params;
+  const data = {
+    message: "更新用户信息",
+    timestamp: Date.now(),
+    data: {
+      runUser: userId,
+      userId,
+      avatar
+    }
+  };
+  return request.post('/api/user/updateUser', data);
+};
+
 module.exports = {
   login,
   autoLogin,
   register,
   logout,
   wxLogin,
-  wxRegister
+  wxRegister,
+  getAccountInfo,
+  updateAccountInfo,
+  updateUserAvatar
 }; 

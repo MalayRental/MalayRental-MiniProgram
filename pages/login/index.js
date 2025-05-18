@@ -2,6 +2,7 @@
 const app = getApp();
 const userUtils = require('../../utils/userUtils');
 const { userAccountService } = require('../../api/service/index');
+const { getImageUrl } = require('../../api/service/imageGetService');
 
 Page({
   data: {
@@ -113,7 +114,7 @@ Page({
         
         // 处理用户头像URL
         if (userInfo && userInfo.avatar) {
-          userInfo.avatar = userUtils.processAvatarUrl(userInfo.avatar);
+          userInfo.avatar = getImageUrl('avatar', userInfo.avatar);
         }
         
         // 更新全局数据
@@ -190,7 +191,7 @@ Page({
               
               // 处理用户头像URL
               if (userInfo && userInfo.avatar) {
-                userInfo.avatar = userUtils.processAvatarUrl(userInfo.avatar);
+                userInfo.avatar = getImageUrl('avatar', userInfo.avatar);
               }
               
               // 更新全局数据

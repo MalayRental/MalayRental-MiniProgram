@@ -1,6 +1,7 @@
 const app = getApp()
 const { chatService } = require('../../api/service/index');
 const userUtils = require('../../utils/userUtils');
+const { getImageUrl } = require('../../api/service/imageGetService');
 
 // 聊天时间格式化
 function formatChatTime(timeStr) {
@@ -101,7 +102,7 @@ Page({
         // 适配字段并处理头像和时间
         const chatList = res.data.map(item => ({
           id: item.chatId,
-          avatar: userUtils.processAvatarUrl(item.staffAvatar),
+          avatar: getImageUrl('avatar', item.staffAvatar),
           userName: item.staffName,
           lastMessage:
             item.lastMessageType === 'Image' ? '[图片消息]' :
