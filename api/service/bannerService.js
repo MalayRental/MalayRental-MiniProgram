@@ -16,8 +16,10 @@ const getBannerList = () => {
       const { data, code, message } = response;
       
       if (code === 200) {
+        // 过滤掉 status 为 Disabled 的 banner
+        const enabledBanners = data.filter(banner => banner.status === 'Enable');
         // 处理图片路径
-        const banners = data.map(banner => {
+        const banners = enabledBanners.map(banner => {
           return {
             id: banner.bannerId,
             image: getImageUrl('banner', banner.image),
