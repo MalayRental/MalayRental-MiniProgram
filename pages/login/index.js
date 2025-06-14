@@ -8,7 +8,7 @@ Page({
   data: {
     phoneNumber: '', // 手机号
     password: '', // 密码
-    isAgree: true, // 是否同意协议
+    isAgree: false, // 是否同意协议
     phoneNumberFocus: false, // 手机号输入框是否聚焦
     passwordFocus: false // 密码输入框是否聚焦
   },

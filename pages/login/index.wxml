@@ -65,7 +65,7 @@
       <checkbox value="agree" checked="{{isAgree}}" color="#4ac924"></checkbox>
     </checkbox-group>
     <view class="agreement-text">
-      登录即代表同意
+      请阅读并同意
       <text class="link-text" bindtap="navigateToUserAgreement">《用户协议》</text>
       和
       <text class="link-text" bindtap="navigateToPrivacyPolicy">《隐私政策》</text>

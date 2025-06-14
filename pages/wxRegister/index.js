@@ -8,7 +8,7 @@ Page({
   data: {
     phone: '', // 手机号
     nickname: '', // 用户昵称
-    isAgree: true, // 是否同意协议
+    isAgree: false, // 是否同意协议，整改为默认false
     phoneFocus: false, // 手机号输入框是否聚焦
     nicknameFocus: false, // 用户昵称输入框是否聚焦
     openId: '' // 微信openId

@@ -9,7 +9,7 @@ Page({
     nickname: '', // 用户昵称
     password: '', // 密码
     confirmPassword: '', // 确认密码
-    isAgree: true, // 是否同意协议
+    isAgree: false, // 是否同意协议，整改为默认false
     phoneFocus: false, // 手机号输入框是否聚焦
     nicknameFocus: false, // 用户昵称输入框是否聚焦
     passwordFocus: false, // 密码输入框是否聚焦
