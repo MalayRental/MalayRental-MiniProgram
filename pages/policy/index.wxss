@@ -72,45 +72,4 @@
   color: #999;
   text-align: right;
   margin-top: 30rpx;
-}
-
-.policy-tabs {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 30rpx;
-  background: #fff;
-  border-bottom: 2rpx solid #eee;
-  border-radius: 12rpx;
-  padding: 0 12rpx;
-}
-
-.policy-tab {
-  flex: 1;
-  text-align: center;
-  font-size: 32rpx;
-  color: #666;
-  padding: 24rpx 0 18rpx 0;
-  background: none;
-  border-radius: 0;
-  margin: 0;
-  position: relative;
-  font-weight: 500;
-}
-
-.policy-tab.active {
-  color: #4ac924;
-  font-weight: bold;
-}
-
-.policy-tab.active::after {
-  content: '';
-  display: block;
-  position: absolute;
-  left: 30rpx;
-  right: 30rpx;
-  bottom: -2rpx;
-  height: 6rpx;
-  background: #4ac924;
-  border-radius: 3rpx;
 } 
