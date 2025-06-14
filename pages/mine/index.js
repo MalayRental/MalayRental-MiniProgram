@@ -42,7 +42,7 @@ Page({
       { 
         id: 5, 
         icon: '/assets/icons/policy.png', 
-        text: '隐私政策', 
+        text: '用户服务和隐私', 
         url: '/pages/policy/index',
         needLogin: false
       },

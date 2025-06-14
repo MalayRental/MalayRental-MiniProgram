@@ -2,7 +2,7 @@ const app = getApp()
 
 Page({
   data: {
-    // 页面数据
+    activeTab: 'privacy' // 默认显示隐私政策
   },
 
   onLoad: function() {
@@ -16,5 +16,12 @@ Page({
       path: '/pages/policy/index',
       imageUrl: '/assets/images/share-image.png'
     };
+  },
+
+  switchTab: function(e) {
+    const tab = e.currentTarget.dataset.tab;
+    if (tab && tab !== this.data.activeTab) {
+      this.setData({ activeTab: tab });
+    }
   }
 }) 
