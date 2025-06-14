@@ -280,15 +280,23 @@ Page({
     wx.showLoading({ title: '加载中...' });
     houseListService.getHouseList()
       .then(houseList => {
-        // 处理房源封面图片地址
+        console.log('首页-原始houseList:', houseList);
+        // 处理房源封面图片地址，并保证id字段为houseId，lat_lng字段不丢失
         const housesWithUrl = houseList.map(item => ({
           ...item,
-          coverImage: getImageUrl('houseCover', item.coverImage)
+          coverImage: getImageUrl('houseCover', item.coverImage),
+          id: item.houseId // 放在最后，确保不会被覆盖
         }));
+        console.log('首页-获取到的房源:', housesWithUrl);
         this.setData({
           houses: housesWithUrl,
           filteredHouses: housesWithUrl
         });
+        // 保存到全局变量和本地缓存，供地图页复用
+        getApp().globalData.houseList = housesWithUrl;
+        wx.setStorageSync('houseList', housesWithUrl);
+        console.log('首页-存入全局变量的houseList:', getApp().globalData.houseList);
+        console.log('首页-存入本地缓存的houseList:', wx.getStorageSync('houseList'));
         wx.hideLoading();
       })
       .catch(error => {

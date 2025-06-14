@@ -11,16 +11,19 @@ const getHouseList = () => {
     .then(response => {
       const { data, code, message } = response;
       if (code === 200) {
+        // 过滤掉 status 不是 Normal 的房源
+        const normalHouses = data.filter(house => house.status === 'Normal');
         // 格式化图片路径
-        return data.map(house => ({
-          id: house.houseId,
+        return normalHouses.map(house => ({
+          houseId: house.houseId,
           area: house.area,
           houseName: house.houseName,
           orientation: house.orientation,
           proportion: house.proportion,
           price: house.price,
           coverImage: getImageUrl('houseCover', house.coverImage),
-          status: house.status
+          status: house.status,
+          lat_lng: house.lat_lng
         }));
       } else {
         return Promise.reject(message || '获取房源列表失败');

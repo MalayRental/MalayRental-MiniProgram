@@ -67,7 +67,7 @@
     <view class="panel-body" wx:if="{{currentHouse}}">
       <!-- 房源图片 -->
       <view class="house-image">
-        <image src="{{currentHouse.imgUrl || defaultImage}}" mode="aspectFill"></image>
+        <image src="{{currentHouse.coverImage}}" mode="aspectFill"></image>
       </view>
       
       <view class="price-box">

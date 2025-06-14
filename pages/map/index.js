@@ -1,5 +1,4 @@
 // map.js
-const { houses } = require('../../utils/houses.js');
 const { getHouseList } = require('../../api/service/houseListService.js');
 const { houseAreaService } = require('../../api/service/index');
 
@@ -13,7 +12,6 @@ Page({
     scale: 14,
     cityName: 'Nilai', // 默认城市名称
     // 默认房源图片
-    defaultImage: 'http://192.168.1.9:8080/api/images/banner/5514c926-c121-4177-b4ac-41879c6652cf.jpeg',
     loadingHouses: true,
     loadError: false,
     // 新增筛选器数据
@@ -51,8 +49,37 @@ Page({
     // 获取位置区域列表
     this.fetchAreaList();
     
-    // 获取房源数据并格式化为地图标记点
-    this.loadHouseMarkers();
+    // 优先从全局变量或本地缓存获取首页房源数据
+    let houseList = getApp().globalData.houseList || wx.getStorageSync('houseList') || [];
+    console.log('地图页-原始houseList:', houseList);
+    houseList = houseList.filter(item => item.status === 'Normal');
+    console.log('地图页-过滤status后houseList:', houseList);
+    // 处理 lat_lng 字段为经纬度
+    const processedHouses = houseList.map(item => {
+      console.log('房源id:', item.id, 'lat_lng:', item.lat_lng);
+      let latitude = null, longitude = null;
+      if (item.lat_lng) {
+        const [x, y] = item.lat_lng.replace(/[A-Za-z]/g, '').split(',');
+        latitude = parseFloat(x);
+        longitude = parseFloat(y);
+        console.log('解析lat_lng:', item.lat_lng, '=>', latitude, longitude);
+      }
+      // id只保留数字部分且为number
+      let markerId = item.houseId;
+      if (typeof markerId === 'string') {
+        const match = markerId.match(/\d+/);
+        markerId = match ? Number(match[0]) : null;
+      }
+      return {
+        ...item,
+        id: markerId,
+        latitude,
+        longitude,
+        imgUrl: item.coverImage
+      };
+    });
+    console.log('地图页-处理后房源数据:', processedHouses);
+    this.processHouseData(processedHouses);
   },
 
   // 清理初始区域列表
@@ -206,23 +233,48 @@ Page({
   // 更新地图标记
   updateMapMarkers: function(houses) {
     const markers = houses.map(house => {
+      // 提取houseId中的数字部分作为id
+      let markerId = house.id;
+      if (typeof markerId === 'string') {
+        const match = markerId.match(/\d+/);
+        markerId = match ? Number(match[0]) : null;
+      }
+      // 截断标题，汉字算1个字，字母和符号算0.5个字，最多10个字，超出加省略号
+      let title = house.title || house.houseName || '';
+      let len = 0, cutIdx = 0;
+      for (let i = 0; i < title.length; i++) {
+        const char = title[i];
+        if (/[\x00-\x7f]/.test(char)) {
+          len += 0.5; // 英文、符号
+        } else {
+          len += 1; // 汉字
+        }
+        if (len > 10) {
+          break;
+        }
+        cutIdx = i + 1;
+      }
+      if (cutIdx < title.length) {
+        title = title.slice(0, cutIdx) + '...';
+      }
       return {
-        id: house.id,
+        id: markerId,
         latitude: house.latitude,
         longitude: house.longitude,
         width: 40,
         height: 40,
         iconPath: '/assets/icons/icon-locate.png',
         callout: {
-          content: `${house.title || house.houseName}\nRM${house.price}/月`,
+          content: `${title}\nRM${house.price}/月`,
           color: '#ffffff',
           fontSize: 14,
           borderRadius: 5,
           bgColor: '#1aad19',
           padding: 8,
-          display: 'ALWAYS',
+          display: 'ALWAYS', // 始终显示
           textAlign: 'center'
         },
+        // 点击区域放大
         clickable: true,
         anchor: {
           x: 0.5,
@@ -265,39 +317,62 @@ Page({
       .then(apiHouses => {
         // 处理API返回的房源数据
         // 注意：API中可能没有经纬度信息，这里我们先使用本地数据
-        this.processHouseData(houses);
+        this.processHouseData(apiHouses);
       })
       .catch(error => {
         console.error('从API获取房源失败，使用本地数据:', error);
         // 使用本地数据作为备选
-        this.processHouseData(houses);
+        this.processHouseData(apiHouses);
       });
   },
 
   // 处理房源数据
   processHouseData(houseData) {
-    console.log('加载标记，房源数量:', houseData.length);
+    console.log('地图页-加载标记，房源数量:', houseData.length);
     
     // 处理房源数据，确保图片路径正确
     const processedHouses = houseData.map(house => {
       return {
         ...house,
-        // 统一使用指定的图片
-        imgUrl: this.data.defaultImage
+        imgUrl: house.coverImage // 用真实的封面图片
       };
     });
     
     // 使用上传的图标
     const markers = processedHouses.map(house => {
+      // 提取houseId中的数字部分作为id
+      let markerId = house.id;
+      if (typeof markerId === 'string') {
+        const match = markerId.match(/\d+/);
+        markerId = match ? Number(match[0]) : null;
+      }
+      // 截断标题，汉字算1个字，字母和符号算0.5个字，最多10个字，超出加省略号
+      let title = house.title || house.houseName || '';
+      let len = 0, cutIdx = 0;
+      for (let i = 0; i < title.length; i++) {
+        const char = title[i];
+        if (/[\x00-\x7f]/.test(char)) {
+          len += 0.5; // 英文、符号
+        } else {
+          len += 1; // 汉字
+        }
+        if (len > 10) {
+          break;
+        }
+        cutIdx = i + 1;
+      }
+      if (cutIdx < title.length) {
+        title = title.slice(0, cutIdx) + '...';
+      }
       return {
-        id: house.id,
+        id: markerId,
         latitude: house.latitude,
         longitude: house.longitude,
         width: 40,
         height: 40,
         iconPath: '/assets/icons/icon-locate.png',
         callout: {
-          content: `${house.title || house.houseName}\nRM${house.price}/月`,
+          content: `${title}\nRM${house.price}/月`,
           color: '#ffffff',
           fontSize: 14,
           borderRadius: 5,
@@ -314,6 +389,7 @@ Page({
         }
       };
     });
+    console.log('地图页-生成markers:', markers);
     
     this.setData({
       markers,
@@ -327,27 +403,40 @@ Page({
   onMarkerTap(e) {
     console.log('点击了标记:', e);
     const markerId = e.markerId;
-    const house = this.data.processedHouses.find(h => h.id === markerId) || 
-                 houses.find(h => h.id === markerId);
-    
+    // 通过markerId找到对应的house对象
+    const house = this.data.processedHouses.find(h => {
+      let idNum = h.id;
+      if (typeof idNum === 'string') {
+        const match = idNum.match(/\d+/);
+        idNum = match ? Number(match[0]) : null;
+      }
+      return idNum === markerId;
+    });
     if (house) {
-      console.log('找到房源:', house.title || house.houseName);
-      
-      // 先隐藏当前显示的信息面板，然后设置新的房源并显示
-      this.setData({
-        showHouseInfo: false,
-        currentHouse: null
-      }, () => {
-        // 使用setTimeout确保DOM更新后再显示新面板
-        setTimeout(() => {
-          this.setData({
-            currentHouse: house,
-            showHouseInfo: true
-          });
-        }, 50);
+      // 获取房源详情，传递house.houseId
+      const { getHouseDetail } = require('../../api/service/houseDetailService');
+      getHouseDetail(house.houseId).then(detail => {
+        // 只用首页缓存的coverImage
+        // 展示详细信息
+        this.setData({
+          showHouseInfo: false,
+          currentHouse: null
+        }, () => {
+          setTimeout(() => {
+            this.setData({
+              currentHouse: {
+                ...detail,
+                coverImage: house.coverImage // 只用首页缓存图片
+              },
+              showHouseInfo: true
+            });
+          }, 50);
+        });
+      }).catch(() => {
+        wx.showToast({ title: '获取房源详情失败', icon: 'none' });
       });
     } else {
-      console.log('未找到对应房源');
+      wx.showToast({ title: '未找到对应房源', icon: 'none' });
     }
   },
 
@@ -368,26 +457,14 @@ Page({
 
   // 点击查看详情按钮
   viewHouseDetail() {
-    // 只使用H001和H002两个房源ID
-    const availableHouseIds = ['H001'];
-    
-    // 随机选择一个房源ID
-    const randomIndex = Math.floor(Math.random() * availableHouseIds.length);
-    const randomHouseId = availableHouseIds[randomIndex];
-    
-    console.log('随机跳转到房源详情，ID:', randomHouseId);
-    
-    // 跳转到房源详情页面
-    wx.navigateTo({
-      url: `/pages/houseDetail/index?id=${randomHouseId}`,
-      fail: (err) => {
-        console.error('页面跳转失败:', err);
-        wx.showToast({
-          title: '页面跳转失败',
-          icon: 'none'
-        });
-      }
-    });
+    const house = this.data.currentHouse;
+    if (house && house.houseId) {
+      wx.navigateTo({
+        url: `/pages/houseDetail/index?id=${house.houseId}`
+      });
+    } else {
+      wx.showToast({ title: '未找到房源ID', icon: 'none' });
+    }
   },
 
   // 关闭房源信息面板
