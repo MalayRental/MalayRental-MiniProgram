@@ -8,9 +8,9 @@ Page({
   // 分享小程序
   onShareAppMessage: function() {
     return {
-      title: '马来租房 - 隐私保护指引',
-      path: '/pages/policy/index',
-      imageUrl: '/assets/images/share-image.png'
+      title: '马来西亚租房小程序，优质房源等你来选！',
+      path: '/pages/home/index',
+      imageUrl: ''
     };
   }
 }) 

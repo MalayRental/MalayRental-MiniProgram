@@ -12,9 +12,9 @@ Page({
   // 分享小程序
   onShareAppMessage: function() {
     return {
-      title: '马来租房 - 让您在马来西亚租房更简单、更安心',
+      title: '马来西亚租房小程序，优质房源等你来选！',
       path: '/pages/home/index',
-      imageUrl: '/assets/images/share-image.png'
+      imageUrl: ''
     };
   }
 }) 

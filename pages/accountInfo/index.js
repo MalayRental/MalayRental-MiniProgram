@@ -185,5 +185,13 @@ Page({
       wx.hideLoading();
       wx.showToast({ title: '保存失败', icon: 'none' });
     });
+  },
+
+  onShareAppMessage: function () {
+    return {
+      title: '马来西亚租房小程序，优质房源等你来选！',
+      path: '/pages/home/index',
+      imageUrl: ''
+    }
   }
 }) 

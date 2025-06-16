@@ -107,8 +107,9 @@ Page({
   // 分享
   onShareAppMessage: function() {
     return {
-      title: '我在马来租房收藏的好房源',
-      path: '/pages/home/index'
+      title: '马来西亚租房小程序，优质房源等你来选！',
+      path: '/pages/home/index',
+      imageUrl: ''
     };
   }
 }) 
