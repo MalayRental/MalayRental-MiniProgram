@@ -67,35 +67,6 @@ Page({
       });
   },
   
-  // 移除收藏
-  removeFavorite: function(e) {
-    const id = e.currentTarget.dataset.id;
-    
-    wx.showModal({
-      title: '取消收藏',
-      content: '确定要取消收藏该房源吗？',
-      confirmText: '确定',
-      cancelText: '取消',
-      success: (res) => {
-        if (res.confirm) {
-          // 这里应该是调用接口取消收藏
-          // 以下是模拟操作
-          const favoriteList = this.data.favoriteList.filter(item => item.id !== id);
-          
-          this.setData({
-            favoriteList,
-            isEmpty: favoriteList.length === 0
-          });
-          
-          wx.showToast({
-            title: '已取消收藏',
-            icon: 'success'
-          });
-        }
-      }
-    });
-  },
-  
   // 前往房源详情
   goToDetail: function(e) {
     const id = e.currentTarget.dataset.id;
