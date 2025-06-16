@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "浏览历史",
   "enablePullDownRefresh": false,
-  "enableShareAppMessage": true
+  "enableShareAppMessage": true,
+  "enableShareTimeline": true
 } 

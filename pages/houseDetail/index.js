@@ -189,5 +189,14 @@ Page({
       path: `/pages/houseDetail/index?id=${this.data.houseId}`,
       imageUrl: house.images && house.images.length > 0 ? house.images[0] : ''
     };
+  },
+
+  onShareTimeline: function () {
+    const house = this.data.house;
+    return {
+      title: house.houseName ? `【出租】${house.houseName}` : '马来西亚优质房源推荐',
+      query: `id=${this.data.houseId}`,
+      imageUrl: house.images && house.images.length > 0 ? house.images[0] : ''
+    };
   }
 }) 
