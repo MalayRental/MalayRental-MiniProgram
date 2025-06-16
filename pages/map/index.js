@@ -38,10 +38,8 @@ Page({
         longitude,
         cityName
       });
-    } else {
-      // 如果没有传入城市参数，获取用户位置
-      this.getUserLocation();
     }
+    // 不再自动获取用户位置
 
     // 确保初始区域列表中没有null值
     this.cleanInitialLocations();
@@ -288,26 +286,6 @@ Page({
     });
   },
 
-  // 获取用户位置
-  getUserLocation() {
-    wx.getLocation({
-      type: 'gcj02',
-      success: (res) => {
-        this.setData({
-          latitude: res.latitude,
-          longitude: res.longitude,
-          cityName: '当前位置'
-        });
-      },
-      fail: () => {
-        wx.showToast({
-          title: '获取位置失败，使用默认位置',
-          icon: 'none'
-        });
-      }
-    });
-  },
-
   // 加载房源标记
   loadHouseMarkers() {
     this.setData({ loadingHouses: true, loadError: false });
@@ -477,8 +455,16 @@ Page({
   // 分享
   onShareAppMessage() {
     return {
-      title: `${this.data.cityName}房源地图`,
-      path: `/pages/map/index?latitude=${this.data.latitude}&longitude=${this.data.longitude}&cityName=${this.data.cityName}`
-    };
+      title: '马来西亚租房小程序，优质房源等你来选！',
+      path: '/pages/home/index',
+      imageUrl: ''
+    }
+  },
+    onShareTimeline: function () {
+    return {
+      title: '马来西亚租房小程序，优质房源等你来选！',
+      query: '',
+      imageUrl: ''
+    }
   }
 })
