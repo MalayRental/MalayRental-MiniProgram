@@ -1,6 +1,4 @@
 {
   "navigationBarTitleText": "我的收藏",
-  "enablePullDownRefresh": false,
-  "enableShareAppMessage": true,
-  "enableShareTimeline": true
+  "enablePullDownRefresh": false
 } 

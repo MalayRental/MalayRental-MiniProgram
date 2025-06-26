@@ -30,6 +30,7 @@ Page({
   },
 
   onLoad: function() {
+    console.log('首页onLoad');
     // 获取Banner数据
     this.fetchBannerList();
     // 获取区域列表
@@ -321,5 +322,12 @@ Page({
       title: '马来西亚租房小程序，优质房源等你来选！',
       imageUrl: ''
     }
+  },
+
+  // 处理搜索框点击，跳转到搜索页面
+  handleSearchTap: function() {
+    wx.navigateTo({
+      url: '/pages/search/index'
+    });
   },
 }) 

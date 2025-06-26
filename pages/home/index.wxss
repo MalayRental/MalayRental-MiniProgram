@@ -186,6 +186,10 @@
   height: 100%;
   margin-left: 16rpx;
   font-size: 28rpx;
+  display: flex;
+  align-items: center;
+  line-height: 72rpx;
+  pointer-events: none;
 }
 
 .search-placeholder {

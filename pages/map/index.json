@@ -5,7 +5,5 @@
   "navigationStyle": "custom",
   "usingComponents": {
     "navigation-bar": "/components/navigation-bar/navigation-bar"
-  },
-  "enableShareAppMessage": true,
-  "enableShareTimeline": true
+  }
 } 
