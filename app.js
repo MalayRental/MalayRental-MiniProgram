@@ -1,5 +1,6 @@
 // app.js
 const userUtils = require('./utils/userUtils');
+const websocket = require('./utils/websocket');
 
 App({
   globalData: {
@@ -22,5 +23,14 @@ App({
     
     // 检查登录状态
     userUtils.checkLoginStatus(this);
+    // 检查自动登录后是否已登录，已登录则建立WebSocket
+    if (userUtils.isLoggedIn()) {
+      websocket.connectWebSocket();
+    }
   }
 })
+
+// 登录成功后也要建立WebSocket
+userUtils.onLoginSuccess = function() {
+  websocket.connectWebSocket();
+};

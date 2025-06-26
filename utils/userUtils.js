@@ -104,9 +104,24 @@ const saveLoginInfo = (loginData) => {
   
   // 设置登录状态为已登录
   setLoginStatus(LOGIN_STATUS.LOGGED_IN);
+
+  // 登录成功后回调（用于WebSocket等）
+  if (typeof module.exports.onLoginSuccess === 'function') {
+    module.exports.onLoginSuccess();
+  }
+
+  console.log('[Login] saveLoginInfo loginData:', loginData);
 };
 
 // 清除登录信息
+const closeWebSocket = (() => {
+  try {
+    return require('./websocket').closeWebSocket;
+  } catch (e) {
+    return null;
+  }
+})();
+
 const clearLoginInfo = () => {
   // 清除本地存储的信息
   wx.removeStorageSync(STORAGE_KEYS.USER_TOKEN);
@@ -116,6 +131,11 @@ const clearLoginInfo = () => {
   
   // 设置登录状态为未登录
   setLoginStatus(LOGIN_STATUS.NOT_LOGGED_IN);
+
+  // 关闭WebSocket
+  if (typeof closeWebSocket === 'function') {
+    closeWebSocket(); 
+  }
 };
 
 // 格式化手机号显示
@@ -149,9 +169,6 @@ const checkLoginStatus = (app) => {
   } else {
     // 设置未登录状态
     setNotLoggedIn(app);
-    
-    // 用户未登录，跳转到登录页面
-    navigateToLogin();
   }
 };
 
@@ -213,9 +230,6 @@ const handleLoginFailure = (app) => {
   // 设置未登录状态
   setNotLoggedIn(app);
   
-  // 跳转到登录页面
-  navigateToLogin();
-  
   // 提示用户
   wx.showToast({
     title: '登录失效，请重新登录',
@@ -246,34 +260,6 @@ const setNotLoggedIn = (app) => {
   }
 };
 
-/**
- * 跳转到登录页面
- */
-const navigateToLogin = () => {
-  // 获取当前页面栈
-  const pages = getCurrentPages();
-  
-  // 延迟跳转，避免在小程序启动初期造成多次跳转
-  setTimeout(() => {
-    // 如果不在登录或注册页面，则跳转到登录页面
-    if (pages.length === 0) {
-      // 小程序刚启动
-      wx.navigateTo({
-        url: '/pages/login/index'
-      });
-    } else {
-      const currentPage = pages[pages.length - 1];
-      const route = currentPage.route;
-      
-      if (route !== 'pages/login/index' && route !== 'pages/register/index') {
-        wx.navigateTo({
-          url: '/pages/login/index'
-        });
-      }
-    }
-  }, 500);
-};
-
 module.exports = {
   STORAGE_KEYS,
   LOGIN_STATUS,
@@ -294,7 +280,6 @@ module.exports = {
   handleLoginFailure,
   setLoggedIn,
   setNotLoggedIn,
-  navigateToLogin,
   saveOpenId,
   getOpenId
 }; 

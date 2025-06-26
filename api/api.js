@@ -2,7 +2,7 @@
 // 定义基础URL和API URL常量
 
 // 基础URL
-const BASE_URL = 'https://mr.lostzone.cn:6395';
+const BASE_URL = 'https://api.malayrental.cn:9947';
 // const BASE_URL = 'http://192.168.1.17:8080';
 
 // API URL常量
