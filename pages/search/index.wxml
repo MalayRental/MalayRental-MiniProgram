@@ -1,0 +1,57 @@
+<navigation-bar title="搜索房源" back="{{true}}" background="#4ac924" color="#ffffff"></navigation-bar>
+<view class="search-container-bg">
+  <view class="search-container">
+    <view class="search-box">
+      <icon type="search" size="16" color="#999"></icon>
+      <input 
+        class="search-input" 
+        placeholder="请输入房源名称" 
+        placeholder-class="search-placeholder"
+        bindinput="onInput"
+        focus="{{true}}"
+        value="{{searchValue}}"
+      />
+      <view class="search-clear" bindtap="clearSearch" wx:if="{{searchValue}}">
+        <icon type="clear" size="16" color="#999"></icon>
+      </view>
+    </view>
+  </view>
+  <block wx:if="{{!searchValue}}">
+    <view class="guess-section">
+      <view class="section-title">猜你想搜</view>
+      <view class="tag-list">
+        <block wx:for="{{guessList}}" wx:key="item">
+          <view class="tag" bindtap="onTagTap" data-keyword="{{item}}">{{item}}</view>
+        </block>
+      </view>
+    </view>
+    <view class="hot-section">
+      <view class="section-title">热搜标签</view>
+      <view class="tag-list">
+        <block wx:for="{{hotList}}" wx:key="item">
+          <view class="tag hot" bindtap="onTagTap" data-keyword="{{item}}">{{item}}</view>
+        </block>
+      </view>
+    </view>
+  </block>
+  <scroll-view scroll-y="true" class="house-list" wx:if="{{searchValue}}">
+    <block wx:for="{{resultList}}" wx:key="id">
+      <view class="house-item" bindtap="navigateToDetail" data-houseid="{{item.id}}">
+        <image src="{{item.coverImage}}" class="house-cover" mode="aspectFill"></image>
+        <view class="house-info">
+          <view class="house-name">{{item.houseName}}</view>
+          <view class="house-area">{{item.area}}</view>
+          <view class="house-details">
+            <text class="house-orientation">{{item.orientation}}</text>
+            <text class="house-proportion">{{item.proportion}}m²</text>
+          </view>
+          <view class="house-price">{{item.price}} RM/月</view>
+        </view>
+      </view>
+    </block>
+    <view class="empty-state" wx:if="{{resultList.length === 0}}">
+      <image src="/assets/images/empty.png" class="empty-image"></image>
+      <text class="empty-text">未找到相关房源</text>
+    </view>
+  </scroll-view>
+</view> 
